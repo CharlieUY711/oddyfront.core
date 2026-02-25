@@ -1328,7 +1328,7 @@ function SlideCard({ p, isOpen, dir, onToggle, onAdd, deptColors, cartItems, isI
   }, [p.img, p.d]);
 
   return (
-    <div className="oddy-card-slot">
+    <div className={`oddy-card-slot${isOpen ? ' panel-open' : ''}`}>
       {/* Static card */}
       <div
         id={`ec${p.id}`}
