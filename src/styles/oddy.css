@@ -1506,33 +1506,32 @@ input[type="range"]::-moz-range-track {
   pointer-events: none;
 }
 
-/* En móvil, el panel se extiende hacia abajo */
+/* En móvil, ocultar el panel deslizante y usar solo flip */
 @media (max-width: 768px) {
+  /* Ocultar panel deslizante en mobile - usar flip en su lugar */
   .oddy-panel-wrap {
-    top: 100%;
-    left: 0;
-    right: 0;
-    height: 100%;
-    width: 100%;
-  }
-  
-  .oddy-panel-inner {
-    transform: translateY(-100%);
-    height: 100%;
-  }
-  
-  .oddy-panel-wrap.open .oddy-panel-inner {
-    transform: translateY(0);
+    display: none !important;
   }
 
-  /* Ajustar el card-slot para que muestre ambas tarjetas completas */
-  .oddy-card-slot {
-    overflow: visible;
+  /* Asegurar que flip funcione correctamente en mobile */
+  .oddy-fc {
+    position: absolute;
+    inset: 0;
+    perspective: 600px;
+    cursor: pointer;
+    border-radius: var(--r);
   }
 
-  /* Cuando el panel está abierto, expandir el card-slot */
-  .oddy-card-slot .oddy-panel-wrap.open {
-    position: relative;
+  .oddy-fi {
+    position: absolute;
+    inset: 0;
+    transition: transform .5s cubic-bezier(.4, 0, .2, 1);
+    transform-style: preserve-3d;
+    border-radius: var(--r);
+  }
+
+  .oddy-fc.flipped .oddy-fi { 
+    transform: rotateY(180deg); 
   }
 }
 

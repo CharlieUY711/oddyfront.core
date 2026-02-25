@@ -264,10 +264,19 @@ function FlipCard({ p, onAdd, onFlipped, deptColors, cartItems, isInCart }: {
   const [showSellerInfo, setShowSellerInfo] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
 
-  const handleFlip = () => {
+  const handleFlip = (e: React.MouseEvent) => {
     const next = !flipped;
     setFlipped(next);
-    if (next) onFlipped();
+    if (next) {
+      onFlipped();
+      // Scroll sutil al tope cuando se hace flip
+      const cardElement = e.currentTarget.closest('.oddy-card-slot');
+      if (cardElement) {
+        setTimeout(() => {
+          cardElement.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
+        }, 100);
+      }
+    }
   };
   const handleAdd = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -557,7 +566,7 @@ function FlipCard({ p, onAdd, onFlipped, deptColors, cartItems, isInCart }: {
   }, [p.img]);
 
   return (
-    <div id={`fc${p.id}`} className={`oddy-fc${flipped ? ' flipped' : ''}`} onClick={handleFlip}>
+    <div id={`fc${p.id}`} className={`oddy-fc${flipped ? ' flipped' : ''}`} onClick={(e) => handleFlip(e)}>
       <div className="oddy-fi">
 
         {/* ── FRONT FACE ── */}
@@ -986,6 +995,18 @@ function SlideCard({ p, isOpen, dir, onToggle, onAdd, deptColors, cartItems, isI
   const [label,   setLabel]   = useState('Agregar al Carrito');
   const [style,   setStyle]   = useState<React.CSSProperties>({});
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [flipped, setFlipped] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  
+  // Detectar si está en mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
   
   // Función para reproducir sonido de clic
   const playClickSound = () => {
@@ -1025,6 +1046,26 @@ function SlideCard({ p, isOpen, dir, onToggle, onAdd, deptColors, cartItems, isI
     onAdd();
     setLabel('✓ Listo'); setStyle({ background: '#6BB87A' });
     setTimeout(() => { setLabel('Agregar al Carrito'); setStyle({}); }, 1100);
+  };
+
+  const handleToggle = (e: React.MouseEvent) => {
+    if (isMobile) {
+      // En mobile, usar flip
+      const next = !flipped;
+      setFlipped(next);
+      if (next) {
+        // Scroll sutil al tope cuando se hace flip
+        const cardElement = e.currentTarget.closest('.oddy-card-slot');
+        if (cardElement) {
+          setTimeout(() => {
+            cardElement.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
+          }, 100);
+        }
+      }
+    } else {
+      // En desktop, usar slide
+      onToggle();
+    }
   };
 
   // Crear array de imágenes del artículo (la primera es la principal)
@@ -1327,13 +1368,367 @@ function SlideCard({ p, isOpen, dir, onToggle, onAdd, deptColors, cartItems, isI
     }
   }, [p.img, p.d]);
 
+  // En mobile, usar flip; en desktop, usar slide
+  if (isMobile) {
+    return (
+      <div className="oddy-card-slot">
+        <div id={`fc${p.id}`} className={`oddy-fc${flipped ? ' flipped' : ''}`} onClick={handleToggle}>
+          <div className="oddy-fi">
+            {/* FRONT FACE - usar la misma estructura que FlipCard */}
+            <div className="oddy-ff">
+              {/* Contenido del frente - copiar de FlipCard */}
+              <div className="oddy-top">
+                <div className="oddy-cimg">
+                  {playing && playingVideoIndex !== null && videoArray[playingVideoIndex] ? (
+                    <>
+                      <video
+                        ref={videoRef}
+                        className="oddy-vid-frame"
+                        src={videoArray[playingVideoIndex] || ''}
+                        autoPlay={!isPaused}
+                        muted={isMuted}
+                        playsInline
+                        loop={false}
+                        style={{
+                          position: 'absolute',
+                          top: '50%',
+                          left: '50%',
+                          transform: 'translate(-50%, -50%)',
+                          width: '102%',
+                          height: '102%',
+                          objectFit: 'cover',
+                          margin: 0,
+                          padding: 0,
+                          border: 'none',
+                          outline: 'none',
+                          minWidth: '100%',
+                          minHeight: '100%'
+                        }}
+                        onClick={handleVideoCenterClick}
+                      />
+                      {showBackArrow && (
+                        <button
+                          onClick={handleCloseVideo}
+                          style={{
+                            position: 'absolute',
+                            top: '8px',
+                            right: '8px',
+                            zIndex: 6,
+                            background: iconColor === '#333' ? 'rgba(255,255,255,0.85)' : 'rgba(0,0,0,0.6)',
+                            border: 'none',
+                            cursor: 'pointer',
+                            padding: '6px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            borderRadius: '6px',
+                            backdropFilter: 'blur(4px)'
+                          }}
+                        >
+                          <IconBack color={iconColor} />
+                        </button>
+                      )}
+                      <div style={{
+                        position: 'absolute',
+                        bottom: '8px',
+                        left: '8px',
+                        zIndex: 5,
+                        display: 'flex',
+                        gap: '4px',
+                        alignItems: 'center',
+                        backgroundColor: iconColor === '#333' ? 'rgba(255,255,255,0.85)' : 'rgba(0,0,0,0.6)',
+                        padding: '4px 6px',
+                        borderRadius: '6px',
+                        backdropFilter: 'blur(4px)'
+                      }}>
+                        <button onClick={(e) => handleVideoControl('rewind', e)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', display: 'flex', alignItems: 'center' }}>
+                          <IconRewind color={iconColor} />
+                        </button>
+                        <button onClick={(e) => handleVideoControl(isPaused ? 'play' : 'pause', e)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', display: 'flex', alignItems: 'center' }}>
+                          {isPaused ? <IconPlayTriangle filled color={iconColor} /> : <IconPause color={iconColor} />}
+                        </button>
+                        <button onClick={(e) => handleVideoControl('forward', e)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', display: 'flex', alignItems: 'center' }}>
+                          <IconForward color={iconColor} />
+                        </button>
+                        <button onClick={(e) => handleVideoControl('speed1.5', e)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', color: iconColor, fontSize: '11px', fontWeight: 600 }}>1.5x</button>
+                        <button onClick={(e) => handleVideoControl('speed2', e)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', color: iconColor, fontSize: '11px', fontWeight: 600 }}>2x</button>
+                      </div>
+                      <div style={{
+                        position: 'absolute',
+                        bottom: '8px',
+                        right: '8px',
+                        zIndex: 5,
+                        display: 'flex',
+                        gap: '4px',
+                        alignItems: 'center'
+                      }}>
+                        <button 
+                          onClick={handleVolumeIconClick}
+                          style={{ 
+                            background: 'none',
+                            border: 'none',
+                            cursor: 'pointer',
+                            padding: '2px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                          }}
+                        >
+                          <IconVolume color={iconColor} />
+                        </button>
+                        <input
+                          type="range"
+                          min="0"
+                          max="1"
+                          step="0.1"
+                          value={volume}
+                          onChange={handleVolumeChange}
+                          onClick={(e) => e.stopPropagation()}
+                          style={{ 
+                            width: '60px', 
+                            height: '3px', 
+                            cursor: 'pointer',
+                            accentColor: iconColor === '#333' ? '#333' : '#fff',
+                            WebkitAppearance: 'none',
+                            appearance: 'none',
+                            background: iconColor === '#333' ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.3)',
+                            borderRadius: '2px',
+                            outline: 'none'
+                          }}
+                        />
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <img src={p.img} alt={p.n} ref={imgRef} />
+                      {!playing && (
+                        <div style={{ 
+                          position: 'absolute', 
+                          top: '8px', 
+                          left: '8px', 
+                          zIndex: 4 
+                        }}>
+                          <div style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
+                            {[1, 2, 3, 4, 5].map(i => (
+                              <span key={i} style={{ color: i <= Math.round(p.r) ? '#FFD700' : '#C8C4BE', fontSize: '12px' }}>
+                                ★
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {videoArray.length > 0 && (
+                        <div style={{
+                          position: 'absolute',
+                          top: '8px',
+                          right: '8px',
+                          zIndex: 4,
+                          display: 'flex',
+                          gap: '4px',
+                          alignItems: 'center'
+                        }}>
+                          {videoArray.map((vid, idx) => (
+                            <button
+                              key={idx}
+                              onClick={(e) => handleVideoClick(idx, e)}
+                              style={{
+                                background: 'none',
+                                border: 'none',
+                                cursor: vid ? 'pointer' : 'default',
+                                padding: '2px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                opacity: vid ? 1 : 0.5
+                              }}
+                            >
+                              <IconPlayTriangle filled={!!vid} color={iconColor} />
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </>
+                  )}
+                  <div className="oddy-dept-label">{p.d}</div>
+                </div>
+              </div>
+              <div className="oddy-divider" style={{ backgroundColor: deptColors[p.d] }} />
+              <div className="oddy-middle">
+                <div className="oddy-title">{p.n}</div>
+                <div className="oddy-price">$ {p.p}</div>
+              </div>
+              <div className="oddy-bottom">
+                <button className="oddy-add-btn" onClick={handleAdd} style={style}>
+                  {label}
+                </button>
+              </div>
+            </div>
+            {/* BACK FACE - usar la misma estructura que FlipCard */}
+            <div className="oddy-fb">
+              <img className="oddy-ghost-img" src={selectedImage} alt="" aria-hidden="true" />
+              <div className="oddy-fb-content">
+                {/* Miniaturas */}
+                <div className="oddy-panel-miniatures" style={{ 
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(5, 1fr)',
+                  gap: '8px',
+                  marginBottom: '0px',
+                  width: '100%'
+                }}>
+                  {articleImages.map((img, idx) => (
+                    <div 
+                      key={`mini-${p.id}-${idx}`} 
+                      onClick={img ? (e) => { 
+                        e.stopPropagation(); 
+                        setSelectedImageIndex(idx); 
+                      } : undefined}
+                      style={{ 
+                        width: '100%', 
+                        aspectRatio: '1 / 1',
+                        borderRadius: '8px', 
+                        overflow: 'hidden',
+                        border: img && selectedImageIndex === idx 
+                          ? '2px solid #6BB87A' 
+                          : img 
+                            ? '1.5px solid rgba(255,255,255,0.3)' 
+                            : SHOW_EMPTY_THUMBNAIL_BORDERS 
+                              ? '1px solid rgba(107, 184, 122, 0.3)' 
+                              : 'none',
+                        cursor: img ? 'pointer' : 'default',
+                        transition: 'transform 0.2s, border-color 0.2s',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        opacity: img ? (selectedImageIndex === idx ? 1 : 0.8) : (SHOW_EMPTY_THUMBNAIL_BORDERS ? 1 : 0),
+                        backgroundColor: img ? 'transparent' : (SHOW_EMPTY_THUMBNAIL_BORDERS ? 'rgba(107, 184, 122, 0.05)' : 'transparent'),
+                      }}
+                      onMouseEnter={img ? (e) => {
+                        if (selectedImageIndex !== idx) {
+                          e.currentTarget.style.transform = 'scale(1.05)';
+                          e.currentTarget.style.opacity = '1';
+                        }
+                      } : undefined}
+                      onMouseLeave={img ? (e) => {
+                        if (selectedImageIndex !== idx) {
+                          e.currentTarget.style.transform = 'scale(1)';
+                          e.currentTarget.style.opacity = '0.8';
+                        }
+                      } : undefined}
+                    >
+                      {img ? (
+                        <img 
+                          src={img} 
+                          alt={`${p.n} - Foto ${idx + 1}`}
+                          style={{ 
+                            width: '100%', 
+                            height: '100%', 
+                            objectFit: 'cover',
+                            aspectRatio: '1 / 1'
+                          }}
+                        />
+                      ) : null}
+                    </div>
+                  ))}
+                </div>
+                {/* Línea de color con categoría y nombre */}
+                <div style={{ 
+                  width: 'calc(100% + 16px)', 
+                  height: '11.5px',
+                  backgroundColor: deptColors[p.d] || '#C8C4BE',
+                  marginLeft: '-8px',
+                  marginRight: '-8px',
+                  marginTop: '8px',
+                  marginBottom: '8px',
+                  position: 'relative',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px'
+                }}>
+                  <div style={{ 
+                    color: '#000000', 
+                    fontSize: '0.75rem', 
+                    fontWeight: 'bold',
+                    textAlign: 'center',
+                    whiteSpace: 'nowrap'
+                  }}>{p.d}</div>
+                  <span style={{ color: '#000000', fontSize: '0.75rem', fontWeight: 'bold', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>| {p.n}</span>
+                </div>
+                {/* Información */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px', gap: '8px' }}>
+                  <div className="oddy-cprice" style={{ flexShrink: 0, textAlign: 'right' }}>$ {separatePrice(p.p)}</div>
+                </div>
+                {/* Descripción */}
+                <div className="oddy-panel-desc">{p.desc}</div>
+                {/* Preguntas y respuestas */}
+                {(() => {
+                  const questions = [
+                    { q: '¿Cuál es el estado del producto?', a: 'El producto está en excelente estado, con uso mínimo.' },
+                    { q: '¿Hace envíos?', a: 'Sí, realizo envíos a todo el país.' },
+                    { q: '¿Acepta cambios?', a: 'No se aceptan cambios, solo venta final.' }
+                  ];
+                  return questions.map((item, idx) => (
+                    <div key={idx} style={{ marginBottom: '8px', paddingBottom: '8px', borderBottom: idx < questions.length - 1 ? '1px solid rgba(0,0,0,0.1)' : 'none' }}>
+                      <div style={{ fontWeight: 600, fontSize: '0.75rem', marginBottom: '4px', color: '#000' }}>{item.q}</div>
+                      <div style={{ fontSize: '0.7rem', color: '#666' }}>{item.a}</div>
+                    </div>
+                  ));
+                })()}
+                {/* Valoración y nombre de usuario */}
+                <div style={{
+                  position: 'absolute',
+                  bottom: '12.5%',
+                  left: '8px',
+                  right: '8px',
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: '8px',
+                  zIndex: 10
+                }}>
+                  <div style={{
+                    fontSize: '10px',
+                    fontWeight: 600,
+                    color: '#000',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    flex: 1,
+                    minWidth: 0,
+                    textAlign: 'left'
+                  }}>
+                    {p.sellerName || 'Vendedor'}
+                  </div>
+                  <div style={{ display: 'flex', gap: '2px', alignItems: 'center', flexShrink: 0 }}>
+                    {[1, 2, 3, 4, 5].map(i => (
+                      <span key={i} style={{ color: i <= Math.round(p.r) ? '#FFD700' : '#C8C4BE', fontSize: '12px' }}>
+                        ★
+                      </span>
+                    ))}
+                    <span style={{ fontSize: '10px', fontWeight: 700, color: '#000', marginLeft: '4px' }}>{p.r.toFixed(1)}</span>
+                  </div>
+                </div>
+                <div className="oddy-bottom">
+                  <button className="oddy-add-btn" onClick={handleAdd} style={style}>
+                    {label}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Desktop: usar slide (comportamiento original)
   return (
     <div className={`oddy-card-slot${isOpen ? ' panel-open' : ''}`}>
       {/* Static card */}
       <div
         id={`ec${p.id}`}
         className={`oddy-ec${isOpen ? ' sh-open' : ''}`}
-        onClick={onToggle}
+        onClick={handleToggle}
       >
         {/* ── FRONT FACE (igual estructura que Market) ── */}
         <div className="oddy-top">
