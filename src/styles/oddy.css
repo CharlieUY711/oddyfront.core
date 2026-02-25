@@ -1776,7 +1776,8 @@ input[type="range"]::-moz-range-track {
 .oddy-mobile-header-top,
 .oddy-mobile-categories,
 .oddy-mobile-categories-wrapper,
-.oddy-mobile-footer {
+.oddy-mobile-footer,
+.oddy-mobile-bottom-bar {
   display: none !important;
 }
 
@@ -1785,8 +1786,8 @@ input[type="range"]::-moz-range-track {
   /* Header móvil simplificado */
   .oddy-tb {
     height: auto;
-    min-height: 60px;
-    padding: 8px 14px;
+    min-height: auto;
+    padding: 0;
     flex-direction: column;
     justify-content: flex-start;
     align-items: stretch;
@@ -1804,67 +1805,38 @@ input[type="range"]::-moz-range-track {
     display: none;
   }
 
-  /* Header móvil primera línea */
+  /* Ocultar header desktop en mobile */
+  .oddy-header {
+    display: none !important;
+  }
+
+  /* Header móvil: solo buscador arriba */
   .oddy-mobile-header-top {
-    display: flex;
+    display: flex !important;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     width: 100%;
     padding: 8px 14px;
     gap: 10px;
   }
 
-  .oddy-mobile-search-btn {
-    width: 40px;
-    height: 40px;
-    border-radius: 4px;
-    background: #6BB87A;
-    border: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #ffffff;
-    font-weight: 700;
-    font-size: 16px;
-    font-family: 'Bebas Neue', sans-serif;
-    cursor: pointer;
-    flex-shrink: 0;
-    transition: opacity 0.2s;
-  }
-
-  .oddy-mobile-search-btn:active {
-    opacity: 0.8;
-  }
-
-  .oddy-mobile-login-btn {
-    width: 40px;
-    height: 40px;
-    border-radius: 4px;
-    background: #FF6835;
-    border: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #ffffff;
-    font-weight: 700;
-    font-size: 14px;
-    font-family: 'Bebas Neue', sans-serif;
-    cursor: pointer;
-    flex-shrink: 0;
-    transition: opacity 0.2s;
-  }
-
-  .oddy-mobile-login-btn:active {
-    opacity: 0.8;
-  }
-
-  /* Wrapper de categorías con flechas */
-  .oddy-mobile-categories-wrapper {
-    display: flex !important;
-    align-items: center;
+  .oddy-mobile-search-only {
     width: 100%;
-    padding: 8px 14px;
-    gap: 8px;
+    max-width: 100%;
+  }
+
+  .oddy-mobile-search-only input {
+    width: 100%;
+  }
+
+  /* Wrapper de categorías oculto en mobile */
+  .oddy-mobile-categories-wrapper {
+    display: none !important;
+  }
+
+  /* Mostrar barra inferior móvil */
+  .oddy-mobile-bottom-bar {
+    display: flex !important;
   }
 
   .oddy-mobile-scroll-btn {
@@ -2008,6 +1980,82 @@ input[type="range"]::-moz-range-track {
   .oddy-panel-wrap.open.dir-right .oddy-panel-inner,
   .oddy-panel-wrap.open.dir-left .oddy-panel-inner {
     transform: translateY(0);
+  }
+
+  /* Barra inferior móvil */
+  .oddy-mobile-bottom-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #FF6835;
+    border-top: 1.5px solid #e04e20;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+    z-index: 300;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 8px 12px;
+    gap: 8px;
+    height: 60px;
+    box-sizing: border-box;
+  }
+
+  [data-sh="true"] .oddy-mobile-bottom-bar {
+    background: #6BB87A !important;
+    border-top-color: #6BA87A !important;
+  }
+
+  [data-sh="false"] .oddy-mobile-bottom-bar {
+    background: #FF6835 !important;
+    border-top-color: #e04e20 !important;
+  }
+
+  .oddy-mobile-logo-small {
+    height: 24px;
+    width: auto;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .oddy-mobile-logo-small svg {
+    height: 100%;
+    width: auto;
+  }
+
+  .oddy-mobile-market-btn {
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    width: auto;
+    min-width: auto;
+    max-width: none;
+    flex: 1;
+    max-width: 100px;
+  }
+
+  .oddy-mobile-login-btn-bottom {
+    font-size: 0.7rem;
+    padding: 4px 8px;
+    white-space: nowrap;
+    flex: 1;
+    max-width: 100px;
+  }
+
+  .oddy-mobile-cart {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+  }
+
+  .oddy-mobile-cart svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Ajustar padding del main para la barra inferior */
+  .oddy-main {
+    padding-bottom: 80px !important;
   }
 
   /* Ocultar elementos desktop */

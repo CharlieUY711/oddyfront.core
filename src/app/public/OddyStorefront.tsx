@@ -2474,64 +2474,14 @@ export default function OddyStorefront() {
 
       {/* ── TOPBAR ── */}
       <header className="oddy-tb">
-        {/* ── HEADER MÓVIL ── */}
+        {/* ── HEADER MÓVIL: SOLO BUSCADOR ARRIBA ── */}
         <div className="oddy-mobile-header-top">
-          <button 
-            className="oddy-mobile-search-btn" 
-            onClick={() => {
-              // Abrir buscador - puedes agregar lógica aquí
-              const searchInput = document.querySelector('.oddy-search input') as HTMLInputElement;
-              if (searchInput) {
-                searchInput.focus();
-              }
-            }}
-          >
-            SH
-          </button>
-          <button 
-            className="oddy-mobile-login-btn" 
-            onClick={() => setShowLoginModal(true)}
-          >
-            I/R
-          </button>
-        </div>
-        <div className="oddy-mobile-categories-wrapper">
-          <button 
-            className="oddy-mobile-scroll-btn oddy-mobile-scroll-left"
-            onClick={() => {
-              const container = document.querySelector('.oddy-mobile-categories') as HTMLElement;
-              if (container) {
-                container.scrollBy({ left: -150, behavior: 'smooth' });
-              }
-            }}
-          >
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M15 18l-6-6 6-6"/>
-            </svg>
-          </button>
-          <div className="oddy-mobile-categories">
-            {getTopCategories().slice(0, 2).map((cat, idx) => (
-              <div key={idx} className="oddy-mobile-category">
-                {cat}
-              </div>
-            ))}
+          <div className="oddy-search oddy-mobile-search-only">
+            <input type="text" placeholder="encontra lo que buscas" />
           </div>
-          <button 
-            className="oddy-mobile-scroll-btn oddy-mobile-scroll-right"
-            onClick={() => {
-              const container = document.querySelector('.oddy-mobile-categories') as HTMLElement;
-              if (container) {
-                container.scrollBy({ left: 150, behavior: 'smooth' });
-              }
-            }}
-          >
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M9 18l6-6-6-6"/>
-            </svg>
-          </button>
         </div>
         
-        {/* ── HEADER PRINCIPAL RESPONSIVE ── */}
+        {/* ── HEADER PRINCIPAL RESPONSIVE (DESKTOP) ── */}
         <div className="oddy-header">
           <div className="oddy-header-left">
             <div className="oddy-logo">
@@ -2586,6 +2536,55 @@ export default function OddyStorefront() {
                 </text>
               </svg>
             </div>
+          </div>
+        </div>
+
+        {/* ── BARRA INFERIOR MÓVIL ── */}
+        <div className="oddy-mobile-bottom-bar">
+          <div className="oddy-mobile-logo-small">
+            <svg viewBox="0 0 200 120" preserveAspectRatio="xMidYMid meet">
+              <g fill="none" stroke="#ffffff" strokeWidth="9" strokeLinecap="round" strokeLinejoin="round" transform="translate(0, 5)">
+                <path d="M 100 10 L 130 25 L 130 55 L 100 70 L 70 55 L 70 25 Z" />
+                <path d="M 70 55 L 100 70 L 100 100 L 70 115 L 40 100 L 40 70 Z" />
+                <path d="M 130 55 L 160 70 L 160 100 L 130 115 L 100 100 L 100 70 Z" />
+              </g>
+            </svg>
+          </div>
+          <button 
+            className="oddy-market-btn oddy-mobile-market-btn" 
+            onClick={() => setMode(isSH ? 'mkt' : 'sh')}
+          >
+            {isSH ? 'Market' : 'Second Hand'}
+          </button>
+          <button 
+            className="oddy-login-btn oddy-mobile-login-btn-bottom" 
+            onClick={() => setShowLoginModal(true)}
+          >
+            Ingreso / Registro
+          </button>
+          <div className="oddy-cart oddy-mobile-cart">
+            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <circle cx="9" cy="21" r="1"/>
+              <circle cx="20" cy="21" r="1"/>
+              <path d="M5 1l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M5 1L1 1" strokeLinecap="round"/>
+              <text 
+                x="14" 
+                y="11.5" 
+                fontSize="9" 
+                fill={isSH ? "#6BB87A" : "#FF6835"}
+                fontWeight="normal"
+                textAnchor="middle"
+                dominantBaseline="middle"
+                style={{ 
+                  fontFamily: 'Times New Roman, serif', 
+                  fontWeight: 'normal',
+                  pointerEvents: 'none'
+                }}
+              >
+                {cartTotal}
+              </text>
+            </svg>
           </div>
         </div>
         <div className="oddy-tbr" style={{ marginLeft: 'auto', display: 'none' }}>
