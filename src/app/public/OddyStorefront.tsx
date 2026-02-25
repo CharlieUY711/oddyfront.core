@@ -64,7 +64,7 @@ const separatePrice = (price: string) => {
 
 // ── Department Colors (Pastel) ──────────────────────────────────────────────
 const DEPT_COLORS: Record<string, string> = {
-  'Electrónica': '#DDA0DD',      // Lila pastel
+  'Electro': '#DDA0DD',      // Lila pastel
   'Moda': '#FFB6C1',         // Rosa pastel
   'Hogar': '#FFDAB9',        // Melocotón
   'Almacén': '#FFF8DC',      // Amarillo pastel
@@ -109,9 +109,9 @@ const SH_MOCK: ShProduct[] = [
 
 const COND = ['','Regular','Buen estado','Buen estado','Muy bueno','Excelente'];
 const DEPTS = [
-  '⚡ Electro','👗 Moda','🏠 Hogar','🛒 Almacén','🐾 Mascotas','🏍️ Motos',
-  '🧼 Limpieza','💊 Salud','⚽ Deporte','📱 Celulares','🔧 Ferretería','📚 Librería',
-  '🍼 Bebés','🎮 Gaming','🌿 Jardín','🚗 Autos','💄 Belleza','🍕 Delivery',
+  'Electro','Moda','Hogar','Almacén','Mascotas','Motos',
+  'Limpieza','Salud','Deporte','Celulares','Ferretería','Librería',
+  'Bebés','Gaming','Jardín','Autos','Belleza','Delivery',
 ];
 
 // ── Icons ─────────────────────────────────────────────────────────────────────
@@ -829,22 +829,30 @@ function FlipCard({ p, onAdd, onFlipped, deptColors, cartItems, isInCart }: {
             {/* Barra de color del departamento */}
             <div style={{ 
               width: 'calc(100% + 16px)', 
-              height: '10px', 
+              height: '11.5px', 
               backgroundColor: deptColors[p.d] || '#C8C4BE',
               marginLeft: '-8px',
               marginRight: '-8px',
               marginTop: '8px',
               marginBottom: '8px',
-            }}></div>
+              position: 'relative',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              <div style={{ 
+                color: '#000000', 
+                fontSize: '0.75rem', 
+                fontWeight: 'bold',
+                textAlign: 'center',
+                whiteSpace: 'nowrap'
+              }}>{p.d}</div>
+            </div>
             {/* Información igual a la primera tarjeta */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', width: '100%' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', width: '100%' }}>
-                <div className="oddy-cdept" style={{ color: '#FF6835' }}>{p.d}</div>
-                {p.o && <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', fontWeight: 400, color: 'var(--muted)', textDecoration: 'line-through' }}>{separatePrice(p.o)}</span>}
-              </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', width: '100%', gap: '8px' }}>
                 <div className="oddy-cname" style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.n}</div>
-                <div className="oddy-cprice" style={{ flexShrink: 0, textAlign: 'right' }}>{separatePrice(p.p)}</div>
+                <div className="oddy-cprice" style={{ flexShrink: 0, textAlign: 'right' }}>$ {separatePrice(p.p)}</div>
               </div>
             </div>
             <div className="oddy-panel-desc">{p.desc}</div>
@@ -1327,253 +1335,200 @@ function SlideCard({ p, isOpen, dir, onToggle, onAdd, deptColors, cartItems, isI
         className={`oddy-ec${isOpen ? ' sh-open' : ''}`}
         onClick={onToggle}
       >
-        <div className="oddy-eimg" style={{ borderBottomColor: DEPT_COLORS[p.d] || '#C8C4BE' }}>
-          {playing && playingVideoIndex !== null && videoArray[playingVideoIndex] ? (
-            <>
-            <video
-                ref={videoRef}
-              className="oddy-vid-frame"
-                src={videoArray[playingVideoIndex] || ''}
-                autoPlay={!isPaused}
-                muted={isMuted}
-                playsInline
-                loop={false}
-                onClick={handleVideoCenterClick}
-              />
-              {/* Flecha de volver - Esquina superior derecha */}
-              {showBackArrow && (
-                <button
-                  onClick={handleCloseVideo}
+        {/* ── FRONT FACE (igual estructura que Market) ── */}
+        <div className="oddy-top">
+          <div className="oddy-cimg">
+            {playing && playingVideoIndex !== null && videoArray[playingVideoIndex] ? (
+              <>
+              <video
+                  ref={videoRef}
+                className="oddy-vid-frame"
+                  src={videoArray[playingVideoIndex] || ''}
+                  autoPlay={!isPaused}
+                  muted={isMuted}
+                  playsInline
+                  loop={false}
                   style={{
                     position: 'absolute',
-                    top: '8px',
-                    right: '8px',
-                    zIndex: 6,
-                    background: 'none',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: '102%',
+                    height: '102%',
+                    objectFit: 'cover',
+                    margin: 0,
+                    padding: 0,
                     border: 'none',
-                    cursor: 'pointer',
-                    padding: '4px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
+                    outline: 'none',
+                    minWidth: '100%',
+                    minHeight: '100%'
                   }}
-                >
-                  <IconBack color={iconColor} />
-                </button>
-              )}
-              {/* Controles de video - Esquina inferior izquierda */}
-              <div style={{
-                position: 'absolute',
-                bottom: '8px',
-                left: '8px',
-                zIndex: 5,
-                display: 'flex',
-                gap: '4px',
-                alignItems: 'center'
-              }}>
-                <button onClick={(e) => handleVideoControl('rewind', e)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', display: 'flex', alignItems: 'center' }}>
-                  <IconRewind color={iconColor} />
-                </button>
-                <button onClick={(e) => handleVideoControl(isPaused ? 'play' : 'pause', e)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', display: 'flex', alignItems: 'center' }}>
-                  {isPaused ? <IconPlayTriangle filled color={iconColor} /> : <IconPause color={iconColor} />}
-                </button>
-                <button onClick={(e) => handleVideoControl('forward', e)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', display: 'flex', alignItems: 'center' }}>
-                  <IconForward color={iconColor} />
-                </button>
-                <button onClick={(e) => handleVideoControl('speed1.5', e)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', color: iconColor, fontSize: '11px', fontWeight: 600 }}>1.5x</button>
-                <button onClick={(e) => handleVideoControl('speed2', e)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', color: iconColor, fontSize: '11px', fontWeight: 600 }}>2x</button>
-              </div>
-              {/* Controles de volumen - Esquina inferior derecha */}
-              <div style={{
-                position: 'absolute',
-                bottom: '8px',
-                right: '8px',
-                zIndex: 5,
-                display: 'flex',
-                gap: '4px',
-                alignItems: 'center',
-                backgroundColor: iconColor === '#333' ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.5)',
-                padding: '4px 6px',
-                borderRadius: '4px'
-              }}>
-                <button 
-                  onClick={handleVolumeIconClick}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', display: 'flex', alignItems: 'center' }}
-                >
-                  <IconVolume color={iconColor} />
-                </button>
-                <input
-                  type="range"
-                  min="0"
-                  max="1"
-                  step="0.1"
-                  value={volume}
-                  onChange={handleVolumeChange}
-                  onClick={(e) => e.stopPropagation()}
-                  style={{ width: '60px', height: '3px', cursor: 'pointer' }}
+                  onClick={handleVideoCenterClick}
                 />
-              </div>
-            </>
-          ) : (
-            <>
-                <img ref={imgRef} src={p.img} alt={p.n} />
-              {/* Indicadores de video - Esquina superior derecha */}
-              {videoArray.length > 0 && (
+                {/* Flecha de volver - Esquina superior derecha */}
+                {showBackArrow && (
+                  <button
+                    onClick={handleCloseVideo}
+                    style={{
+                      position: 'absolute',
+                      top: '8px',
+                      right: '8px',
+                      zIndex: 6,
+                      background: iconColor === '#333' ? 'rgba(255,255,255,0.85)' : 'rgba(0,0,0,0.6)',
+                      border: 'none',
+                      cursor: 'pointer',
+                      padding: '6px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: '6px',
+                      backdropFilter: 'blur(4px)'
+                    }}
+                  >
+                    <IconBack color={iconColor} />
+                  </button>
+                )}
+                {/* Controles de video - Esquina inferior izquierda */}
                 <div style={{
                   position: 'absolute',
-                  top: '8px',
+                  bottom: '8px',
+                  left: '8px',
+                  zIndex: 5,
+                  display: 'flex',
+                  gap: '4px',
+                  alignItems: 'center',
+                  backgroundColor: iconColor === '#333' ? 'rgba(255,255,255,0.85)' : 'rgba(0,0,0,0.6)',
+                  padding: '4px 6px',
+                  borderRadius: '6px',
+                  backdropFilter: 'blur(4px)'
+                }}>
+                  <button onClick={(e) => handleVideoControl('rewind', e)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', display: 'flex', alignItems: 'center' }}>
+                    <IconRewind color={iconColor} />
+                  </button>
+                  <button onClick={(e) => handleVideoControl(isPaused ? 'play' : 'pause', e)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', display: 'flex', alignItems: 'center' }}>
+                    {isPaused ? <IconPlayTriangle filled color={iconColor} /> : <IconPause color={iconColor} />}
+                  </button>
+                  <button onClick={(e) => handleVideoControl('forward', e)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', display: 'flex', alignItems: 'center' }}>
+                    <IconForward color={iconColor} />
+                  </button>
+                  <button onClick={(e) => handleVideoControl('speed1.5', e)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', color: iconColor, fontSize: '11px', fontWeight: 600 }}>1.5x</button>
+                  <button onClick={(e) => handleVideoControl('speed2', e)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', color: iconColor, fontSize: '11px', fontWeight: 600 }}>2x</button>
+                </div>
+                {/* Controles de volumen - Esquina inferior derecha */}
+                <div style={{
+                  position: 'absolute',
+                  bottom: '8px',
                   right: '8px',
-                  zIndex: 4,
+                  zIndex: 5,
                   display: 'flex',
                   gap: '4px',
                   alignItems: 'center'
                 }}>
-                  {videoArray.map((vid, idx) => (
-                <button
-                      key={idx}
-                      onClick={(e) => handleVideoClick(idx, e)}
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        cursor: vid ? 'pointer' : 'default',
-                        padding: '2px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        opacity: vid ? 1 : 0.5
-                      }}
-                    >
-                      <IconPlayTriangle filled={!!vid} color={iconColor} />
-                </button>
-                  ))}
+                  <button 
+                    onClick={handleVolumeIconClick}
+                    style={{ 
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      padding: '2px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    <IconVolume color={iconColor} />
+                  </button>
+                  <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.1"
+                    value={volume}
+                    onChange={handleVolumeChange}
+                    onClick={(e) => e.stopPropagation()}
+                    style={{ 
+                      width: '60px', 
+                      height: '3px', 
+                      cursor: 'pointer',
+                      accentColor: iconColor === '#333' ? '#333' : '#fff',
+                      WebkitAppearance: 'none',
+                      appearance: 'none',
+                      background: iconColor === '#333' ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.3)',
+                      borderRadius: '2px',
+                      outline: 'none'
+                    }}
+                  />
                 </div>
-              )}
-            </>
-          )}
-          {!playing && (
-            <div style={{ 
-              position: 'absolute', 
-              top: '12px', 
-              left: '8px', 
-              zIndex: 2 
-            }}>
-              <Dots count={p.c} />
-            </div>
-          )}
-          {/* Categoría sobre la foto en esquina inferior izquierda a 1.5px de la línea */}
-          <div style={{
-            position: 'absolute',
-            bottom: '10px',
-            left: '8px',
-            zIndex: 3,
-            transform: 'translateY(1.5px)'
-          }}>
-            <div className="oddy-cdept" style={{ color: '#000', fontSize: '16px', fontWeight: 900, letterSpacing: 'normal', marginBottom: 0 }}>{p.d}</div>
+              </>
+            ) : (
+              <>
+                <img src={p.img} alt={p.n} ref={imgRef} />
+                {/* Valoración - Esquina superior izquierda */}
+                {!playing && (
+                  <div style={{ 
+                    position: 'absolute', 
+                    top: '8px', 
+                    left: '8px', 
+                    zIndex: 4 
+                  }}>
+                    <div style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
+                      {[1, 2, 3, 4, 5].map(i => (
+                        <span key={i} style={{ color: i <= Math.round(p.r) ? '#FFD700' : '#C8C4BE', fontSize: '12px' }}>
+                          ★
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {/* Indicadores de video - Esquina superior derecha */}
+                {videoArray.length > 0 && (
+                  <div style={{
+                    position: 'absolute',
+                    top: '8px',
+                    right: '8px',
+                    zIndex: 4,
+                    display: 'flex',
+                    gap: '4px',
+                    alignItems: 'center'
+                  }}>
+                    {videoArray.map((vid, idx) => (
+                  <button
+                        key={idx}
+                        onClick={(e) => handleVideoClick(idx, e)}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          cursor: vid ? 'pointer' : 'default',
+                          padding: '2px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          opacity: vid ? 1 : 0.5
+                        }}
+                      >
+                        <IconPlayTriangle filled={!!vid} color={iconColor} />
+                  </button>
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
+            <div className="oddy-dept-label">{p.d}</div>
           </div>
         </div>
-        <div className="oddy-ebody" style={{ position: 'relative' }}>
-          <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', width: '100%', paddingTop: '6px', position: 'relative', height: '100%' }}>
-            <div className="oddy-cname" style={{ 
-              marginLeft: '10px',
-              maxWidth: 'calc(60% - 15px)',
-              display: 'flex',
-              flexDirection: 'column',
-              overflow: 'hidden',
-              alignSelf: 'center',
-              fontSize: '14px',
-              fontWeight: 500,
-              fontFamily: "'JetBrains Mono', monospace",
-              lineHeight: '1.3'
-            }}>
-              {(() => {
-                const words = p.n.split(' ');
-                const lines = [];
-                let currentLine = '';
-                const maxLines = 2;
-                
-                for (let i = 0; i < words.length && lines.length < maxLines; i++) {
-                  const testLine = currentLine ? `${currentLine} ${words[i]}` : words[i];
-                  // Si la línea es muy larga, dividirla
-                  if (testLine.length > 20 && currentLine) {
-                    lines.push(currentLine);
-                    currentLine = words[i];
-                  } else {
-                    currentLine = testLine;
-                  }
-                }
-                if (currentLine && lines.length < maxLines) {
-                  lines.push(currentLine);
-                }
-                
-                return lines.map((line, idx) => (
-                  <span key={idx} style={{ 
-                    fontSize: '14px',
-                    lineHeight: '1.3',
-                    display: 'block',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    wordBreak: 'break-word'
-                  }}>{line}</span>
-                ));
-              })()}
-            </div>
-            <div style={{ 
-              position: 'absolute',
-              right: '60px',
-              top: '50%',
-              transform: 'translateY(-50%)',
-              display: 'flex',
-              alignItems: 'center'
-            }}>
-              <div className="oddy-cprice" style={{ 
-                textAlign: 'left',
-                fontFamily: "'JetBrains Mono', monospace",
-                fontSize: '18.9px',
-                fontWeight: 500
-              }}>{separatePrice(p.p)}</div>
-            </div>
-          </div>
-          {/* Botón en esquina inferior derecha */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onAdd();
-            }}
-            style={{
-              position: 'absolute',
-              bottom: '0',
-              right: '0',
-              width: '60px',
-              height: '65px',
-              backgroundColor: '#6BB87A',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '0 0 8px 0',
-              cursor: 'pointer',
-              zIndex: 10,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '10px',
-              fontWeight: 700,
-              boxShadow: 'inset 0 4px 8px rgba(0, 0, 0, 0.3), inset 0 -4px 8px rgba(255, 255, 255, 0.4), 0 4px 8px rgba(0, 0, 0, 0.25), 0 2px 4px rgba(0, 0, 0, 0.2)',
-              transition: 'all 0.15s ease',
-              transform: 'translateZ(0)',
-              background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.2) 0%, rgba(0, 0, 0, 0.1) 100%), #6BB87A'
-            }}
-            onMouseDown={(e) => {
-              e.currentTarget.style.transform = 'translateZ(0) scale(0.95)';
-              e.currentTarget.style.boxShadow = 'inset 0 2px 4px rgba(0, 0, 0, 0.4), inset 0 -1px 2px rgba(255, 255, 255, 0.1)';
-            }}
-            onMouseUp={(e) => {
-              e.currentTarget.style.transform = 'translateZ(0)';
-              e.currentTarget.style.boxShadow = 'inset 0 4px 8px rgba(0, 0, 0, 0.3), inset 0 -4px 8px rgba(255, 255, 255, 0.4), 0 4px 8px rgba(0, 0, 0, 0.25), 0 2px 4px rgba(0, 0, 0, 0.2)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateZ(0)';
-              e.currentTarget.style.boxShadow = 'inset 0 4px 8px rgba(0, 0, 0, 0.3), inset 0 -4px 8px rgba(255, 255, 255, 0.4), 0 4px 8px rgba(0, 0, 0, 0.25), 0 2px 4px rgba(0, 0, 0, 0.2)';
-            }}
-          >
-            {isInCart ? <IconCartFilled size={18} /> : 'Agregar'}
+
+        <div
+          className="oddy-divider"
+          style={{ backgroundColor: deptColors[p.d] }}
+        />
+
+        <div className="oddy-middle">
+          <div className="oddy-title">{p.n}</div>
+          <div className="oddy-price">$ {p.p}</div>
+        </div>
+
+        <div className="oddy-bottom">
+          <button className="oddy-add-btn" onClick={handleAdd} style={style}>
+            {label}
           </button>
         </div>
       </div>
@@ -1600,8 +1555,7 @@ function SlideCard({ p, isOpen, dir, onToggle, onAdd, deptColors, cartItems, isI
                   } : undefined}
                   style={{ 
                     width: '100%', 
-                    height: '70px',
-                    aspectRatio: '1', 
+                    aspectRatio: '1 / 1',
                     borderRadius: '8px', 
                     overflow: 'hidden',
                     border: img && selectedImageIndex === idx 
@@ -1639,249 +1593,154 @@ function SlideCard({ p, isOpen, dir, onToggle, onAdd, deptColors, cartItems, isI
                       style={{ 
                         width: '100%', 
                         height: '100%', 
-                        objectFit: 'cover' 
+                        objectFit: 'cover',
+                        aspectRatio: '1 / 1'
                       }}
                     />
                   ) : null}
-                </div>
+            </div>
               ))}
             </div>
             {/* Barra de color del departamento */}
             <div style={{ 
               width: 'calc(100% + 16px)', 
-              height: '10px', 
+              height: '11.5px', 
               backgroundColor: deptColors[p.d] || '#C8C4BE',
               marginLeft: '-8px',
               marginRight: '-8px',
               marginTop: '8px',
               marginBottom: '8px',
-            }}></div>
+              position: 'relative',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              <div style={{ 
+                color: '#000000', 
+                fontSize: '0.75rem', 
+                fontWeight: 'bold',
+                textAlign: 'center',
+                whiteSpace: 'nowrap'
+              }}>{p.d}</div>
+            </div>
             {/* Información igual a la primera tarjeta */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', width: '100%' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', width: '100%' }}>
-                <div className="oddy-cdept">{p.d}</div>
-                {p.og && <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', fontWeight: 400, color: 'var(--muted)', textDecoration: 'line-through' }}>{separatePrice(p.og)}</span>}
-              </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', width: '100%', gap: '8px' }}>
                 <div className="oddy-cname" style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.n}</div>
-                <div className="oddy-cprice" style={{ flexShrink: 0, textAlign: 'right' }}>{separatePrice(p.p)}</div>
+                <div className="oddy-cprice" style={{ flexShrink: 0, textAlign: 'right' }}>$ {separatePrice(p.p)}</div>
               </div>
             </div>
             <div className="oddy-panel-desc">{p.desc}</div>
-            {/* Barra de preguntas - últimas 3 */}
-            {(() => {
-              // Parsear preguntas: pueden venir como string separado por | o como array
-              const questions = typeof p.q === 'string' && p.q 
-                ? p.q.split('|').filter(q => q.trim()) 
-                : Array.isArray(p.q) 
-                  ? p.q.filter(q => q && q.trim())
-                  : [];
-              const lastThreeQuestions = questions.slice(-3);
-              
-              if (lastThreeQuestions.length === 0) return null;
-              
-              // Formatear fecha de hoy dd/mm/aa
-              const today = new Date();
-              const day = String(today.getDate()).padStart(2, '0');
-              const month = String(today.getMonth() + 1).padStart(2, '0');
-              const year = String(today.getFullYear()).slice(-2);
-              const todayFormatted = `${day}/${month}/${year}`;
-              
-              return (
-                <div style={{ 
-                  marginTop: '8px',
-                  height: '13px',
-                  display: 'flex',
-                  gap: '8px',
-                  alignItems: 'center',
-                  overflow: 'hidden',
-                  width: '100%',
-                  justifyContent: 'space-between',
-                  backgroundColor: 'rgba(0, 0, 0, 0.06)',
-                  borderRadius: '4px',
-                  padding: '0 4px'
-                }}>
-                  <div style={{ display: 'flex', gap: '8px', flex: 1, minWidth: 0 }}>
-                    {lastThreeQuestions.map((question, idx) => (
-                      <div 
-                        key={idx}
-                        style={{
-                          flex: '1',
-                          fontSize: '9px',
-                          color: 'var(--muted)',
-                          whiteSpace: 'nowrap',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          lineHeight: '13px',
-                          padding: '0 4px'
-                        }}
-                        title={question}
-                      >
-                        {question}
-                      </div>
-                    ))}
-                  </div>
-                  <div style={{
-                    fontSize: '9px',
-                    color: 'var(--muted)',
-                    lineHeight: '13px',
-                    flexShrink: 0,
-                    fontFamily: "'JetBrains Mono', monospace"
-                  }}>
-                    {todayFormatted}
-                  </div>
+          </div>
+          {/* Barra de preguntas - posicionada a la altura del divider (25% desde abajo) */}
+          {(() => {
+            // Parsear preguntas: pueden venir como string separado por | o como array
+            const questions = typeof p.q === 'string' && p.q 
+              ? p.q.split('|').filter(q => q.trim()) 
+              : Array.isArray(p.q) 
+                ? p.q.filter(q => q && q.trim())
+                : [];
+            const lastThreeQuestions = questions.slice(-3);
+            
+            if (lastThreeQuestions.length === 0) return null;
+            
+            // Formatear fecha de hoy dd/mm/aa
+            const today = new Date();
+            const day = String(today.getDate()).padStart(2, '0');
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const year = String(today.getFullYear()).slice(-2);
+            const todayFormatted = `${day}/${month}/${year}`;
+            
+            return (
+              <div style={{ 
+                position: 'absolute',
+                top: '75%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                height: '13px',
+                display: 'flex',
+                gap: '8px',
+                alignItems: 'center',
+                overflow: 'hidden',
+                width: 'calc(100% - 16px)',
+                maxWidth: 'calc(100% - 16px)',
+                justifyContent: 'space-between',
+                backgroundColor: 'rgba(0, 0, 0, 0.06)',
+                borderRadius: '4px',
+                padding: '0 4px',
+                zIndex: 10
+              }}>
+                <div style={{ display: 'flex', gap: '8px', flex: 1, minWidth: 0 }}>
+                  {lastThreeQuestions.map((question, idx) => (
+                    <div 
+                      key={idx}
+                      style={{
+                        flex: '1',
+                        fontSize: '9px',
+                        color: '#000',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        lineHeight: '13px',
+                        padding: '0 4px'
+                      }}
+                      title={question}
+                    >
+                      {question}
+                    </div>
+                  ))}
                 </div>
-              );
-            })()}
-            <div style={{ display: 'flex', gap: '4px', marginTop: '5px', width: '100%', alignItems: 'stretch' }}>
-              <div 
-                style={{ position: 'relative', display: 'flex', alignItems: 'stretch' }}
-                onMouseEnter={() => setShowSellerInfo(true)}
-                onMouseLeave={() => setShowSellerInfo(false)}
-              >
-                <button className="oddy-panel-btn-white" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', width: '100%' }}>
-                  {(() => {
-                    const filled = Math.round(p.r);
-                    const IconPerson = () => (
-                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                        <circle cx="12" cy="7" r="4"/>
-                      </svg>
-                    );
-                    return (
-                      <>
-                        <span style={{ display: 'flex', gap: '1px', alignItems: 'center' }}>
-                          {[1, 2, 3, 4, 5].map(i => (
-                            <span key={i} style={{ color: i <= filled ? '#6BB87A' : '#C8C4BE', display: 'flex', alignItems: 'center' }}>
-                              <IconPerson />
-                            </span>
-                          ))}
-                        </span>
-                        <span style={{ fontSize: '10px', fontWeight: 700 }}>{p.r.toFixed(1)}</span>
-                      </>
-                    );
-                  })()}
-                </button>
-                {/* Tooltip con información del vendedor */}
-                {showSellerInfo && (
-                  <div style={{
-                    position: 'absolute',
-                    bottom: 'calc(100% + 8px)',
-                    left: 0,
-                    width: '100%',
-                    background: 'var(--white)',
-                    border: '1.5px solid var(--line)',
-                    borderRadius: '8px',
-                    padding: '8px',
-                    boxShadow: 'var(--shlg)',
-                    zIndex: 100,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '4px',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}>
-                    {[0, 1, 2, 3].map((offset) => {
-                      const date = new Date(Date.now() - offset * 7 * 24 * 60 * 60 * 1000);
-                      const month = String(date.getMonth() + 1).padStart(2, '0');
-                      const year = String(date.getFullYear()).slice(-2);
-                      const rating = 5 - offset;
-                      return (
-                        <div key={offset} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                          <div style={{ display: 'flex', gap: '1px', alignItems: 'center' }}>
-                            {[1, 2, 3, 4, 5].map(i => (
-                              <span key={i} style={{ color: i <= rating ? '#6BB87A' : '#C8C4BE', display: 'flex', alignItems: 'center' }}>
-                                <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                                  <circle cx="12" cy="7" r="4"/>
-                                </svg>
-                              </span>
-                            ))}
-                          </div>
-                          <div style={{ fontSize: '8px', color: 'var(--muted)', fontFamily: "'JetBrains Mono', monospace" }}>
-                            {month}/{year}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-                {/* Tooltip con últimas 3 valoraciones */}
-                {showRatings && (
-                  <div className="oddy-ratings-tooltip">
-                    <div className="oddy-rating-item">
-                      <span className="oddy-rating-date">20/01/2025</span>
-                      <div style={{ display: 'flex', gap: '1px', alignItems: 'center', marginTop: '2px' }}>
-                        {[1, 2, 3, 4, 5].map(i => (
-                          <span key={i} style={{ color: i <= 5 ? '#6BB87A' : '#C8C4BE', display: 'flex', alignItems: 'center' }}>
-                            <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                              <circle cx="12" cy="7" r="4"/>
-                            </svg>
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="oddy-rating-item">
-                      <span className="oddy-rating-date">18/01/2025</span>
-                      <div style={{ display: 'flex', gap: '1px', alignItems: 'center', marginTop: '2px' }}>
-                        {[1, 2, 3, 4, 5].map(i => (
-                          <span key={i} style={{ color: i <= 4 ? '#6BB87A' : '#C8C4BE', display: 'flex', alignItems: 'center' }}>
-                            <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                              <circle cx="12" cy="7" r="4"/>
-                            </svg>
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="oddy-rating-item">
-                      <span className="oddy-rating-date">15/01/2025</span>
-                      <div style={{ display: 'flex', gap: '1px', alignItems: 'center', marginTop: '2px' }}>
-                        {[1, 2, 3, 4, 5].map(i => (
-                          <span key={i} style={{ color: i <= 5 ? '#6BB87A' : '#C8C4BE', display: 'flex', alignItems: 'center' }}>
-                            <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                              <circle cx="12" cy="7" r="4"/>
-                            </svg>
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                )}
+                <div style={{
+                  fontSize: '9px',
+                  color: 'var(--muted)',
+                  lineHeight: '13px',
+                  flexShrink: 0,
+                  fontFamily: "'JetBrains Mono', monospace"
+                }}>
+                  {todayFormatted}
+                </div>
               </div>
-              <button className="oddy-panel-btn-white" style={{ flexDirection: 'column', gap: '2px' }}>
-                <span style={{ fontSize: '9px', fontWeight: 600, lineHeight: '1.2' }}>{p.rv} visitas</span>
-                <span style={{ fontSize: '8px', fontWeight: 400, color: 'var(--muted)', lineHeight: '1.2' }}>{p.publishedDate || 'N/A'}</span>
-              </button>
-            <button 
-              className="oddy-panel-add" 
-              style={{ 
-                ...style,
-                boxShadow: 'inset 0 4px 8px rgba(0, 0, 0, 0.3), inset 0 -4px 8px rgba(255, 255, 255, 0.4), 0 4px 8px rgba(0, 0, 0, 0.25), 0 2px 4px rgba(0, 0, 0, 0.2)',
-                transition: 'all 0.15s ease',
-                transform: 'translateZ(0)',
-                backgroundImage: style.background ? undefined : 'linear-gradient(180deg, rgba(255, 255, 255, 0.2) 0%, rgba(0, 0, 0, 0.1) 100%)',
-                backgroundBlendMode: style.background ? undefined : 'overlay'
-              }} 
-              onClick={handleAdd}
-              onMouseDown={(e) => {
-                e.currentTarget.style.transform = 'translateZ(0) scale(0.95)';
-                e.currentTarget.style.boxShadow = 'inset 0 2px 4px rgba(0, 0, 0, 0.4), inset 0 -1px 2px rgba(255, 255, 255, 0.1)';
-              }}
-              onMouseUp={(e) => {
-                e.currentTarget.style.transform = 'translateZ(0)';
-                e.currentTarget.style.boxShadow = 'inset 0 4px 8px rgba(0, 0, 0, 0.3), inset 0 -4px 8px rgba(255, 255, 255, 0.4), 0 4px 8px rgba(0, 0, 0, 0.25), 0 2px 4px rgba(0, 0, 0, 0.2)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateZ(0)';
-                e.currentTarget.style.boxShadow = 'inset 0 4px 8px rgba(0, 0, 0, 0.3), inset 0 -4px 8px rgba(255, 255, 255, 0.4), 0 4px 8px rgba(0, 0, 0, 0.25), 0 2px 4px rgba(0, 0, 0, 0.2)';
-              }}
-            >
-              {isInCart ? <IconCartFilled size={16} /> : <><IconCart />{label}</>}
-            </button>
+            );
+          })()}
+          {/* Valoración y nombre de usuario - entre pregunta y botón */}
+          <div style={{
+            position: 'absolute',
+            bottom: '12.5%',
+            left: '8px',
+            right: '8px',
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '8px',
+            zIndex: 10
+          }}>
+            <div style={{
+              fontSize: '10px',
+              fontWeight: 600,
+              color: '#000',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              flex: 1,
+              minWidth: 0,
+              textAlign: 'left'
+            }}>
+              {p.sellerName || 'Vendedor'}
             </div>
+            <div style={{ display: 'flex', gap: '2px', alignItems: 'center', flexShrink: 0 }}>
+              {[1, 2, 3, 4, 5].map(i => (
+                <span key={i} style={{ color: i <= Math.round(p.r) ? '#FFD700' : '#C8C4BE', fontSize: '12px' }}>
+                  ★
+                </span>
+              ))}
+                <span style={{ fontSize: '10px', fontWeight: 700, color: '#000', marginLeft: '4px' }}>{p.r.toFixed(1)}</span>
+            </div>
+          </div>
+          <div className="oddy-bottom">
+            <button className="oddy-add-btn" onClick={handleAdd} style={style}>
+              {label}
+            </button>
           </div>
         </div>
       </div>
@@ -2617,76 +2476,116 @@ export default function OddyStorefront() {
       <header className="oddy-tb">
         {/* ── HEADER MÓVIL ── */}
         <div className="oddy-mobile-header-top">
-          <div className="oddy-mobile-mode-circle" onClick={() => setMode(isSH ? 'mkt' : 'sh')}>
-            {isSH ? 'S' : 'M'}
-          </div>
-          <div className="oddy-mobile-user-icon" onClick={() => setShowLoginModal(true)}>
-            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-              <circle cx="12" cy="7" r="4"/>
-            </svg>
-          </div>
+          <button 
+            className="oddy-mobile-search-btn" 
+            onClick={() => {
+              // Abrir buscador - puedes agregar lógica aquí
+              const searchInput = document.querySelector('.oddy-search input') as HTMLInputElement;
+              if (searchInput) {
+                searchInput.focus();
+              }
+            }}
+          >
+            SH
+          </button>
+          <button 
+            className="oddy-mobile-login-btn" 
+            onClick={() => setShowLoginModal(true)}
+          >
+            I/R
+          </button>
         </div>
-        <div className="oddy-mobile-categories">
-          {getTopCategories().map((cat, idx) => (
-            <div key={idx} className="oddy-mobile-category">
-              {cat}
-            </div>
-          ))}
+        <div className="oddy-mobile-categories-wrapper">
+          <button 
+            className="oddy-mobile-scroll-btn oddy-mobile-scroll-left"
+            onClick={() => {
+              const container = document.querySelector('.oddy-mobile-categories') as HTMLElement;
+              if (container) {
+                container.scrollBy({ left: -150, behavior: 'smooth' });
+              }
+            }}
+          >
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M15 18l-6-6 6-6"/>
+            </svg>
+          </button>
+          <div className="oddy-mobile-categories">
+            {getTopCategories().slice(0, 2).map((cat, idx) => (
+              <div key={idx} className="oddy-mobile-category">
+                {cat}
+              </div>
+            ))}
+          </div>
+          <button 
+            className="oddy-mobile-scroll-btn oddy-mobile-scroll-right"
+            onClick={() => {
+              const container = document.querySelector('.oddy-mobile-categories') as HTMLElement;
+              if (container) {
+                container.scrollBy({ left: 150, behavior: 'smooth' });
+              }
+            }}
+          >
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M9 18l6-6-6-6"/>
+            </svg>
+          </button>
         </div>
         
-        {/* ── LOGO ── */}
-        <div className="oddy-logo-header">
-          <svg viewBox="0 0 200 120" width="116" height="116" style={{ display: 'block', position: 'absolute', top: '-17px', left: '1px', zIndex: 301 }}>
-            {/* Hexágonos interconectados - tres hexágonos: dos abajo, uno arriba centrado */}
-            <g fill="none" stroke="#ffffff" strokeWidth="9" strokeLinecap="round" strokeLinejoin="round" transform="translate(0, 5)">
-              {/* Hexágono superior (centrado) */}
-              <path d="M 100 10 L 130 25 L 130 55 L 100 70 L 70 55 L 70 25 Z" />
-              {/* Hexágono inferior izquierdo */}
-              <path d="M 70 55 L 100 70 L 100 100 L 70 115 L 40 100 L 40 70 Z" />
-              {/* Hexágono inferior derecho */}
-              <path d="M 130 55 L 160 70 L 160 100 L 130 115 L 100 100 L 100 70 Z" />
-            </g>
-          </svg>
-          <div style={{ marginLeft: '105px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', height: '95px', position: 'relative', zIndex: 302 }}>
-            <span id="oddy-text" style={{ fontFamily: 'Arial, sans-serif', fontSize: '32px', fontWeight: 'bold', color: '#ffffff', lineHeight: '1' }}>ODDY</span>
-            <span id="market-text" style={{ fontFamily: 'Arial, sans-serif', fontSize: `${marketFontSize}px`, fontWeight: 'bold', color: '#ffffff', lineHeight: '1' }}>Market</span>
+        {/* ── HEADER PRINCIPAL RESPONSIVE ── */}
+        <div className="oddy-header">
+          <div className="oddy-header-left">
+            <div className="oddy-logo">
+              <svg viewBox="0 0 200 120" preserveAspectRatio="xMidYMid meet">
+                {/* Hexágonos interconectados - tres hexágonos: dos abajo, uno arriba centrado */}
+                <g fill="none" stroke="#ffffff" strokeWidth="9" strokeLinecap="round" strokeLinejoin="round" transform="translate(0, 5)">
+                  {/* Hexágono superior (centrado) */}
+                  <path d="M 100 10 L 130 25 L 130 55 L 100 70 L 70 55 L 70 25 Z" />
+                  {/* Hexágono inferior izquierdo */}
+                  <path d="M 70 55 L 100 70 L 100 100 L 70 115 L 40 100 L 40 70 Z" />
+                  {/* Hexágono inferior derecho */}
+                  <path d="M 130 55 L 160 70 L 160 100 L 130 115 L 100 100 L 100 70 Z" />
+                </g>
+              </svg>
+            </div>
+
+            <button 
+              className="oddy-market-btn" 
+              onClick={() => setMode(isSH ? 'mkt' : 'sh')}
+            >
+              {isSH ? 'Market' : 'Second Hand'}
+            </button>
           </div>
-        </div>
-        <div className="oddy-topbar-group" style={{ paddingLeft: '14px', paddingRight: '14px' }}>
-          {isSH ? (
-            <button className="oddy-secondhand-btn" onClick={() => setMode('mkt')}>MARKET</button>
-          ) : (
-            <button className="oddy-secondhand-btn oddy-secondhand-btn-green" onClick={() => setMode('sh')}>Second Hand</button>
-          )}
-          <div className="oddy-srch" style={{ marginLeft: '15px' }}>
-          <IconSrchSm />
+
+          <div className="oddy-search">
             <input type="text" placeholder="encontra lo que buscas" />
-        </div>
-          <button className="oddy-auth-btn" onClick={() => setShowLoginModal(true)} style={{ marginLeft: '15px' }}>Ingreso / Registro</button>
-          <div style={{ marginLeft: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff', position: 'relative' }}>
-            <svg viewBox="0 0 24 24" width="42" height="28" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <circle cx="9" cy="21" r="1"/>
-              <circle cx="20" cy="21" r="1"/>
-              <path d="M5 1l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M5 1L1 1" strokeLinecap="round"/>
-              <text 
-                x="14" 
-                y="11.5" 
-                fontSize="10" 
-                fill="#FF6835" 
-                fontWeight="normal"
-                textAnchor="middle"
-                dominantBaseline="middle"
-                style={{ 
-                  fontFamily: 'Times New Roman, serif', 
-                  fontWeight: 'normal',
-                  pointerEvents: 'none'
-                }}
-              >
-                0
-              </text>
-            </svg>
+          </div>
+
+          <div className="oddy-header-right">
+            <button className="oddy-login-btn" onClick={() => setShowLoginModal(true)}>Ingreso / Registro</button>
+            <div className="oddy-cart">
+              <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <circle cx="9" cy="21" r="1"/>
+                <circle cx="20" cy="21" r="1"/>
+                <path d="M5 1l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M5 1L1 1" strokeLinecap="round"/>
+                <text 
+                  x="14" 
+                  y="11.5" 
+                  fontSize="9" 
+                  fill="#FF6835" 
+                  fontWeight="normal"
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  style={{ 
+                    fontFamily: 'Times New Roman, serif', 
+                    fontWeight: 'normal',
+                    pointerEvents: 'none'
+                  }}
+                >
+                  0
+                </text>
+              </svg>
+            </div>
           </div>
         </div>
         <div className="oddy-tbr" style={{ marginLeft: 'auto', display: 'none' }}>
