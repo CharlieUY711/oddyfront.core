@@ -43,7 +43,6 @@ interface ShProduct {
   publishedDate?: string;
 }
 interface CartItem { id: number; img: string; n: string; p: string; pNum: number; m: 'mkt' | 'sh'; }
-interface HistItem { id: number; m: 'mkt' | 'sh'; img: string; n: string; }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const parsePrice = (p: string) => parseInt(p.replace(/[\$\.]/g, ''), 10);
@@ -220,7 +219,7 @@ function Stars({ r, rv, label }: { r: number; rv: number; label: string }) {
 
 // ── Market Flip Card ──────────────────────────────────────────────────────────
 function FlipCard({ p, onAdd, onFlipped, deptColors, cartItems, isInCart }: {
-  p: MktProduct; onAdd: () => void; onFlipped: () => void; deptColors: Record<string, string>;
+  p: MktProduct; onAdd: () => void; onFlipped?: (isOpening: boolean) => void; deptColors: Record<string, string>;
   cartItems: CartItem[]; isInCart: boolean;
 }) {
   const SHOW_EMPTY_THUMBNAIL_BORDERS = true; // Controla si se muestran bordes en espacios vacíos del grid
@@ -265,17 +264,12 @@ function FlipCard({ p, onAdd, onFlipped, deptColors, cartItems, isInCart }: {
   const [isMuted, setIsMuted] = useState(false);
 
   const handleFlip = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     const next = !flipped;
     setFlipped(next);
-    if (next) {
-      onFlipped();
-      // Scroll sutil al tope cuando se hace flip
-      const cardElement = e.currentTarget.closest('.oddy-card-slot');
-      if (cardElement) {
-        setTimeout(() => {
-          cardElement.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
-        }, 100);
-      }
+    if (onFlipped) {
+      onFlipped(next);
     }
   };
   const handleAdd = (e: React.MouseEvent) => {
@@ -1007,7 +1001,7 @@ function SlideCard({ p, isOpen, dir, onToggle, onAdd, deptColors, cartItems, isI
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
-  
+
   // Función para reproducir sonido de clic
   const playClickSound = () => {
     try {
@@ -1049,19 +1043,12 @@ function SlideCard({ p, isOpen, dir, onToggle, onAdd, deptColors, cartItems, isI
   };
 
   const handleToggle = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     if (isMobile) {
       // En mobile, usar flip
       const next = !flipped;
       setFlipped(next);
-      if (next) {
-        // Scroll sutil al tope cuando se hace flip
-        const cardElement = e.currentTarget.closest('.oddy-card-slot');
-        if (cardElement) {
-          setTimeout(() => {
-            cardElement.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
-          }, 100);
-        }
-      }
     } else {
       // En desktop, usar slide
       onToggle();
@@ -2627,12 +2614,14 @@ export default function OddyStorefront() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [activeDept, setActiveDept] = useState(0);
   const [expandedId, setExpandedId] = useState<number | null>(null);
-  const [hist,       setHist]       = useState<HistItem[]>([]);
   const [flash,      setFlash]      = useState(false);
   const [flashText,  setFlashText]  = useState('MARKET');
   const [flashKey,   setFlashKey]   = useState(0);
   const [showCart,   setShowCart]   = useState(false);
   const [isHeroCompact, setIsHeroCompact] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [prevExpandedId, setPrevExpandedId] = useState<number | null>(null);
+  const [headerHeight, setHeaderHeight] = useState(isMobile ? 100 : 110);
 
   // Pre-populated cart: vacío inicialmente
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -2742,16 +2731,6 @@ export default function OddyStorefront() {
     }
   }, []);
 
-  const addToHist = useCallback((id: number, m: 'mkt' | 'sh') => {
-    const arr = m === 'mkt' ? MP : SH;
-    const p = arr.find(x => x.id === id);
-    if (!p) return;
-    setHist(prev => {
-      const filtered = prev.filter(h => !(h.id === id && h.m === m));
-      return [{ id, m, img: p.img, n: p.n }, ...filtered].slice(0, 5);
-    });
-  }, []);
-
   const toggleMode = useCallback((silent = false) => {
     if (!silent) { setFlash(true); setFlashKey(k => k + 1); }
     setTimeout(() => {
@@ -2764,26 +2743,12 @@ export default function OddyStorefront() {
     }, silent ? 0 : 200);
   }, []);
 
-  const handleFlipped = (id: number) => addToHist(id, 'mkt');
-
-  const handleExpand = (id: number) => {
-    setExpandedId(prev => prev === id ? null : id);
-    addToHist(id, 'sh');
-  };
-
-  const handleHistClick = (item: HistItem) => {
-    if (item.m !== mode) {
-      toggleMode(true);
-      setTimeout(() => {
-        if (item.m === 'sh') setExpandedId(item.id);
-        document.getElementById(`${item.m === 'mkt' ? 'fc' : 'ec'}${item.id}`)
-          ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 100);
-    } else {
-      if (item.m === 'sh') setExpandedId(item.id);
-      document.getElementById(`${item.m === 'mkt' ? 'fc' : 'ec'}${item.id}`)
-        ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
+  const handleExpandWrapper = (id: number) => {
+    setExpandedId(prev => {
+      const wasOpen = prev === id;
+      const newId = wasOpen ? null : id;
+      return newId;
+    });
   };
 
   // Función para obtener categorías con más publicaciones
@@ -2859,6 +2824,33 @@ export default function OddyStorefront() {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Efecto para detectar tamaño de pantalla
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Calcular altura de la barra superior dinámicamente
+  useEffect(() => {
+    const calculateHeaderHeight = () => {
+      const header = document.querySelector('.oddy-tb');
+      if (header) {
+        const rect = header.getBoundingClientRect();
+        setHeaderHeight(rect.height);
+      } else {
+        setHeaderHeight(isMobile ? 100 : 110);
+      }
+    };
+    calculateHeaderHeight();
+    window.addEventListener('resize', calculateHeaderHeight);
+    return () => window.removeEventListener('resize', calculateHeaderHeight);
+  }, [isMobile]);
 
   return (
     <div data-sh={isSH ? 'true' : 'false'}>
@@ -3126,7 +3118,7 @@ export default function OddyStorefront() {
             display: 'flex',
             alignItems: 'center',
             padding: '0 14px',
-            gap: '12px',
+            gap: '16px',
             boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
             transition: 'all 0.3s ease',
             boxSizing: 'border-box',
@@ -3263,7 +3255,6 @@ export default function OddyStorefront() {
                     <FlipCard
                       p={p}
                       onAdd={() => addToCart(p, 'mkt')}
-                      onFlipped={() => handleFlipped(p.id)}
                       deptColors={DEPT_COLORS_FINAL}
                       cartItems={cartItems}
                       isInCart={isInCart}
@@ -3292,7 +3283,7 @@ export default function OddyStorefront() {
                     p={p}
                     isOpen={expandedId === p.id}
                     dir={panelDir(idx)}
-                    onToggle={() => handleExpand(p.id)}
+                    onToggle={() => handleExpandWrapper(p.id)}
                     onAdd={() => addToCart(p, 'sh')}
                     deptColors={DEPT_COLORS_FINAL}
                     cartItems={cartItems}
@@ -3347,6 +3338,7 @@ export default function OddyStorefront() {
       
       {/* Login Modal */}
       <LoginModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
+      
     </div>
   );
 }

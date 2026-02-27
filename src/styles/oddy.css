@@ -1911,14 +1911,6 @@ input[type="range"]::-moz-range-track {
     padding-bottom: 80px;
   }
 
-  /* Hero oculto en mobile */
-  .oddy-hero {
-    display: none !important;
-  }
-
-  .oddy-hero-compact {
-    display: none !important;
-  }
 
   /* Footer móvil */
   .oddy-mobile-footer {
@@ -2101,5 +2093,62 @@ input[type="range"]::-moz-range-track {
 @media (max-width: 600px) {
   .oddy-fc {
     perspective: 400px;
+  }
+}
+
+/* ── SOLAPA LATERAL: ÚLTIMAS VISTAS ───────────────────────────────────────────── */
+.oddy-hist-panel {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+
+.oddy-hist-panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.oddy-hist-panel::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.oddy-hist-panel::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 3px;
+}
+
+.oddy-hist-panel::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
+
+/* Responsive: En móvil, la solapa ocupa más espacio */
+@media screen and (max-width: 768px) {
+  .oddy-hist-panel {
+    width: 85vw !important;
+    max-width: 320px !important;
+    right: -85vw !important;
+    top: 100px !important;
+    height: calc(100vh - 100px) !important;
+  }
+  
+  .oddy-hist-panel.open {
+    right: 0 !important;
+  }
+  
+  /* Botón de la solapa en móvil */
+  button[style*="position: fixed"][style*="right"] {
+    width: 40px !important;
+    height: 60px !important;
+    right: 0 !important;
+  }
+  
+  button[style*="position: fixed"][style*="right"]:has(+ .oddy-hist-panel.open) {
+    right: 85vw !important;
+    max-width: calc(100vw - 85vw) !important;
+  }
+}
+
+/* Ajustes para tablets */
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .oddy-hist-panel {
+    width: 160px !important;
   }
 }

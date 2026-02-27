@@ -4,7 +4,7 @@
    ===================================================== */
 import { projectId, publicAnonKey } from '../../utils/supabase/info';
 
-const BASE = `https://${projectId}.supabase.co/functions/v1/server/make-server-75638143/departamentos`;
+const BASE = `https://${projectId}.supabase.co/functions/v1/api/departamentos`;
 const HEADERS = {
   'Content-Type': 'application/json',
   'Authorization': `Bearer ${publicAnonKey}`,
@@ -94,3 +94,6 @@ export async function deleteDepartamento(id: string): Promise<void> {
     throw error;
   }
 }
+
+
+

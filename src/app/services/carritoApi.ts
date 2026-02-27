@@ -5,7 +5,7 @@
 import { projectId, publicAnonKey } from '../../utils/supabase/info';
 import { supabase } from '../../utils/supabase/client';
 
-const BASE = `https://${projectId}.supabase.co/functions/v1/server/make-server-75638143/carrito`;
+const BASE = `https://${projectId}.supabase.co/functions/v1/api/carrito`;
 const HEADERS = {
   'Content-Type': 'application/json',
   'Authorization': `Bearer ${publicAnonKey}`,
@@ -281,3 +281,6 @@ export async function vaciarCarrito(): Promise<void> {
     saveCarritoLocal([]);
   }
 }
+
+
+

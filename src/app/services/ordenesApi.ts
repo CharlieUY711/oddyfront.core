@@ -5,7 +5,7 @@
 import { projectId, publicAnonKey } from '../../utils/supabase/info';
 import { supabase } from '../../utils/supabase/client';
 
-const BASE = `https://${projectId}.supabase.co/functions/v1/server/make-server-75638143/ordenes`;
+const BASE = `https://${projectId}.supabase.co/functions/v1/api/ordenes`;
 const HEADERS = {
   'Content-Type': 'application/json',
   'Authorization': `Bearer ${publicAnonKey}`,
@@ -134,3 +134,4 @@ export async function crearOrden(data: CrearOrdenData): Promise<Orden> {
     throw error;
   }
 }
+

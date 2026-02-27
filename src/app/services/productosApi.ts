@@ -4,7 +4,7 @@
    ===================================================== */
 import { projectId, publicAnonKey } from '../../utils/supabase/info';
 
-const BASE = `https://${projectId}.supabase.co/functions/v1/server/make-server-75638143/productos`;
+const BASE = `https://${projectId}.supabase.co/functions/v1/api/productos`;
 const HEADERS = {
   'Content-Type': 'application/json',
   'Authorization': `Bearer ${publicAnonKey}`,
@@ -252,3 +252,6 @@ export async function deleteProductoSecondHand(id: string): Promise<void> {
     throw error;
   }
 }
+
+
+
