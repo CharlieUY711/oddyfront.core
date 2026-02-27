@@ -67,7 +67,7 @@ function transformMarketProduct(p: ProductoMarket, deptColors: Record<string, st
     r: p.rating || 0,
     rv: p.rating_count || 0,
     q: '', // Se cargará desde preguntas
-    vids: p.videos || [],
+    vids: (p.videos || []).map((v: any) => typeof v === 'string' ? v : v?.url).filter(Boolean),
     publishedDate: p.published_date ? new Date(p.published_date).toLocaleDateString('es-UY') : undefined,
   };
 }
@@ -96,7 +96,7 @@ function transformSecondHandProduct(p: ProductoSecondHand, deptColors: Record<st
     r: p.rating || 0,
     rv: p.rating_count || 0,
     q: '',
-    vids: p.videos || [],
+    vids: (p.videos || []).map((v: any) => typeof v === 'string' ? v : v?.url).filter(Boolean),
     publishedDate: p.published_date ? new Date(p.published_date).toLocaleDateString('es-UY') : undefined,
   };
 }
@@ -127,10 +127,13 @@ export function useProductos() {
         setDeptColors(colors);
 
         // Cargar productos
-        const [market, secondhand] = await Promise.all([
+        const [marketResult, secondhandResult] = await Promise.allSettled([
           fetchProductosMarket({ estado: 'activo', limit: 100 }),
           fetchProductosSecondHand({ estado: 'activo', limit: 100 }),
         ]);
+
+        const market = marketResult.status === 'fulfilled' ? marketResult.value : [];
+        const secondhand = secondhandResult.status === 'fulfilled' ? secondhandResult.value : [];
 
         // Transformar productos
         setProductosMarket(market.map(p => transformMarketProduct(p, colors)));

@@ -1,0 +1,5 @@
+{
+  "name": "make-server-75638143",
+  "entrypoint": "index.ts",
+  "verify_jwt": false
+}

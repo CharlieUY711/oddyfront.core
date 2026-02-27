@@ -10,23 +10,6 @@ import { useProductos } from '../hooks/useProductos';
 import { agregarAlCarrito } from '../services/carritoApi';
 import '../../styles/oddy.css';
 
-// ── Images ────────────────────────────────────────────────────────────────────
-const IMG_CASE    = 'https://images.unsplash.com/photo-1574682592200-948fd815c4f0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600';
-const IMG_EARBUDS = 'https://images.unsplash.com/photo-1762553159827-7a5d2167b55d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600';
-const IMG_KITCHEN = 'https://images.unsplash.com/photo-1768875845344-5663fa9acf15?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600';
-const IMG_PETBED  = 'https://images.unsplash.com/photo-1749703174207-257698ceb352?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600';
-const IMG_TV      = 'https://images.unsplash.com/photo-1730909352933-614f1673ac21?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600';
-const IMG_SHOES   = 'https://images.unsplash.com/photo-1761942028138-794f1d151e59?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600';
-const IMG_IPHONE  = 'https://images.unsplash.com/photo-1635425730507-26c324aadbc5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600';
-const IMG_MACBOOK = 'https://images.unsplash.com/photo-1574529395396-21637c4cf5df?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600';
-const IMG_BIKE    = 'https://images.unsplash.com/photo-1571081790807-6933479d240f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600';
-const IMG_SONY    = 'https://images.unsplash.com/photo-1764557159396-419b85356035?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600';
-const IMG_WEIGHTS = 'https://images.unsplash.com/photo-1710746904729-f3ad9f682bb9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600';
-const IMG_CHAIR   = 'https://images.unsplash.com/photo-1528045535275-50e5d46dbae8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600';
-
-// Sample videos (BigBuckBunny clips — always available)
-const VID_MKT = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
-const VID_SH  = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface MktProduct {
@@ -83,28 +66,6 @@ const DEPT_COLORS: Record<string, string> = {
   'Delivery': '#FFDAB9',     // Melocotón (repetido si necesario)
 };
 
-// ── Data Mock (fallback) ──────────────────────────────────────────────────────
-const MP_MOCK: MktProduct[] = [
-  { id:1,  img:IMG_CASE,    d:'Celulares', n:'Funda iPhone 15',  p:'472',    o:'590',   b:'-20%', bt:'',   desc:'Silicona líquida premium, compatible con carga inalámbrica. Protección para bordes y cámara. Disponible en 8 colores.', r:4.3, rv:89,  q:'¿Es compatible con MagSafe? Sí, totalmente.', sellerName:'TechStore' },
-  { id:2,  img:IMG_EARBUDS, d:'Electro',   n:'Auriculares TWS',       p:'1890',  o:null,     b:'Nuevo',bt:'cy', desc:'Cancelación activa de ruido con 3 modos. 8hs + 22hs con estuche. Resistencia IPX4, driver 13mm, aptX.', r:4.7, rv:203, q:'¿Funciona con Android e iOS? Sí, ambos.', vids: [VID_MKT], publishedDate:'20/01/2025', sellerName:'AudioPro' },
-  { id:3,  img:IMG_KITCHEN, d:'Hogar',     n:'Organizadores cocina x6',        p:'890',    o:null,     b:null,   bt:'',   desc:'Set 6 piezas: 3 rectangular + 2 cuadrado + 1 redondo. Tapa hermética, BPA free, apto microondas y lavavajillas.', r:4.1, rv:56,  q:'¿Son apilables? Sí, ahorra espacio.', sellerName:'CasaOrganizada' },
-  { id:4,  img:IMG_PETBED,  d:'Mascotas',  n:'Cama premium mascotas',      p:'1290',  o:null,     b:'Top',  bt:'cy', desc:'Relleno memory foam ortopédico, funda extraíble lavable. Para mascotas hasta 25kg. Antideslizante.', r:4.8, rv:142, q:'¿La funda se lava en lavarropas? Sí, a 40°.', sellerName:'PetComfort' },
-  { id:5,  img:IMG_TV,      d:'Electro',   n:'Smart TV 43" 4K ',         p:'18500', o:'22.000',b:'-16%', bt:'',   desc:'Panel VA 4K UHD, Android TV 11, Chromecast built-in, HDMI 2.1 ×3, USB ×2, WiFi 5GHz, 60Hz, HDR10.', r:4.5, rv:317, q:'¿Tiene Netflix y YouTube? Sí, preinstalados.', sellerName:'ElectroMax' },
-  { id:6,  img:IMG_SHOES,   d:'Moda',      n:'Calzado running',          p:'2890',  o:null,     b:'Nuevo',bt:'cy', desc:'Upper mesh transpirable, suela EVA amortiguada doble densidad, refuerzo talón. Talles 36-45. Unisex.', r:4.4, rv:78,  q:'¿Tallaje normal? Sí, talla normal.' },
-  { id:7,  img:IMG_KITCHEN, d:'Hogar',     n:'Termo acero 1L',         p:'650',    o:'780',   b:'-17%', bt:'',   desc:'Acero inox 18/8 grado alimenticio. Doble pared al vacío. Mantiene frío 24hs, caliente 12hs. Boca 4.5cm.', r:4.6, rv:231, q:'¿Entra una bolsita de té? Sí, perfectamente.' },
-  { id:8,  img:IMG_PETBED,  d:'Mascotas',  n:'Comedero mascotas',             p:'1890',  o:null,     b:'Nuevo',bt:'cy', desc:'Temporizador con 6 porciones programables, pantalla LCD, altavoz para grabar voz. Capacidad 3L.', r:4.6, rv:94,  q:'¿Funciona sin luz? Tiene batería de respaldo.' },
-];
-
-const SH_MOCK: ShProduct[] = [
-  { id:10, img:IMG_IPHONE,  d:'Celulares', n:'iPhone 13 128GB · Muy bueno',            p:'11500', og:'Nuevo 18000', c:4, desc:'Batería 91% (verificado). Sin rayones en pantalla ni cuerpo. Con caja original, cargador y funda.', r:4.8, rv:12, q:'¿Tiene Face ID funcionando? Sí, perfecto.', vids: [VID_SH], publishedDate:'16/01/2025' },
-  { id:11, img:IMG_MACBOOK, d:'Electro',   n:'MacBook Air M1 8GB · Excelente',          p:'28000', og:'Nuevo 42000', c:5, desc:'Sin uso visible. Batería 45 ciclos. Caja original, cargador MagSafe. macOS Sonoma actualizado.', r:5.0, rv:8,  q:'¿Tiene rayones? Sin rayones, excelente estado.', publishedDate:'24/01/2025' },
-  { id:12, img:IMG_BIKE,    d:'Deporte',   n:'Bicicleta mtb Rod 29 · Buen estado',      p:'8500',  og:'Nuevo 14000', c:3, desc:'Frenos hidráulicos Shimano, 21 velocidades. Neumáticos Kenda nuevos. Cuadro aluminio.', r:4.2, rv:5,  q:'¿Incluye candado? No, se vende sola.', publishedDate:'14/01/2025' },
-  { id:13, img:IMG_SONY,    d:'Electro',   n:'Sony WH-1000XM4 · Muy bueno',             p:'4200',  og:'Nuevo 7500',  c:4, desc:'Estuche y cable originales. ANC funcionando perfectamente. Batería 95% de capacidad.', r:4.9, rv:15, q:'¿Conecta a dos dispositivos? Sí, multipoint.', publishedDate:'25/01/2025' },
-  { id:14, img:IMG_WEIGHTS, d:'Deporte',   n:'Pesas ajustables 20kg set',               p:'3800',  og:'Nuevo 6200',  c:3, desc:'Set completo: barra + 10 discos goma (1.25–5kg). Marcas de uso normales. Funcional al 100%.', r:4.3, rv:7,  q:'¿Pesan exacto? Sí, verificadas en balanza.', publishedDate:'13/01/2025' },
-  { id:15, img:IMG_CHAIR,   d:'Hogar',     n:'Sillón reclinable  · Muy bueno', p:'6900',  og:'Nuevo 12000', c:4, desc:'Motor eléctrico silencioso, 3 posiciones. Cuero eco sin grietas. Un año de uso. Retiro mdeo.', r:4.7, rv:9,  q:'¿Tiene garantía? Se puede transferir al comprador.', publishedDate:'26/01/2025' },
-  { id:16, img:IMG_IPHONE,  d:'Celulares', n:'Samsung S22 128GB · Muy bueno',           p:'9800',  og:'Nuevo 16000', c:4, desc:'Pantalla sin rayones. Batería 88% (medida con AccuBattery). Con cargador original.', r:4.6, rv:11, q:'¿Tiene microSD? No tiene expansión de almacenamiento.', publishedDate:'12/01/2025' },
-  { id:17, img:IMG_MACBOOK, d:'Electro',   n:'iPad Air 5ta gen · Excelente',            p:'19500', og:'Nuevo 29000', c:5, desc:'Sin uso visible. Apple Pencil 2da gen + Smart Folio incluidos. iCloud borrado, listo para usar.', r:4.9, rv:6,  q:'¿Tiene cellular? No, es Wi-Fi únicamente.', publishedDate:'27/01/2025' },
-];
 
 const COND = ['','Regular','Buen estado','Buen estado','Muy bueno','Excelente'];
 const DEPTS = [
@@ -2131,8 +2092,8 @@ function SlideCard({ p, isOpen, dir, onToggle, onAdd, deptColors, cartItems, isI
 }
 
 // ── Cross-sell sticky bar ─────────────────────────────────────────────────────
-function CrossSellBar({ isSH }: { isSH: boolean }) {
-  const items  = isSH ? MP : SH;
+function CrossSellBar({ isSH, mp, sh }: { isSH: boolean; mp: MktProduct[]; sh: ShProduct[] }) {
+  const items  = isSH ? mp : sh;
   const label  = isSH ? '♻️ También en 2da Mano' : '🛍️ También en Market';
   return (
     <div className="oddy-cs-sticky">
@@ -2605,9 +2566,9 @@ export default function OddyStorefront() {
   // Cargar productos desde la API
   const { productosMarket: apiMP, productosSecondHand: apiSH, deptColors: apiDeptColors, departamentos, loading: productosLoading } = useProductos();
   
-  // Usar datos de API si están disponibles, sino usar datos mock
-  const MP = apiMP.length > 0 ? apiMP : MP_MOCK;
-  const SH = apiSH.length > 0 ? apiSH : SH_MOCK;
+  // Usar datos de API
+  const MP = apiMP;
+  const SH = apiSH;
   const DEPT_COLORS_FINAL = Object.keys(apiDeptColors).length > 0 ? apiDeptColors : DEPT_COLORS;
   
   const [mode,       setMode]       = useState<'mkt' | 'sh'>('mkt');
