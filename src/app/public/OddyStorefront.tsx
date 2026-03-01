@@ -2860,7 +2860,7 @@ export default function OddyStorefront() {
 
           <div className="oddy-header-right">
             <button className="oddy-login-btn" onClick={() => setShowLoginModal(true)}>Ingreso / Registro</button>
-            <div className="oddy-cart">
+            <div className="oddy-cart" onClick={() => setShowCart(!showCart)} style={{ cursor: 'pointer' }}>
               <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <circle cx="9" cy="21" r="1"/>
                 <circle cx="20" cy="21" r="1"/>
@@ -3299,6 +3299,148 @@ export default function OddyStorefront() {
       
       {/* Login Modal */}
       <LoginModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
+      
+      {/* Cart Modal */}
+      {showCart && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            right: 0,
+            width: '380px',
+            height: '100vh',
+            backgroundColor: '#fff',
+            zIndex: 1000,
+            boxShadow: '-2px 0 10px rgba(0, 0, 0, 0.1)',
+            display: 'flex',
+            flexDirection: 'column'
+          }}
+        >
+          {/* Header */}
+          <div style={{
+            padding: '20px',
+            borderBottom: '1px solid #e0e0e0',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}>
+            <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 'bold' }}>Tu carrito</h2>
+            <button
+              onClick={() => setShowCart(false)}
+              style={{
+                background: 'none',
+                border: 'none',
+                fontSize: '24px',
+                cursor: 'pointer',
+                padding: '0',
+                width: '30px',
+                height: '30px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              ×
+            </button>
+          </div>
+
+          {/* Content */}
+          <div style={{ flex: 1, overflowY: 'auto', padding: '20px' }}>
+            {cartItems.length === 0 ? (
+              <p style={{ textAlign: 'center', color: '#666', marginTop: '40px' }}>
+                Tu carrito está vacío
+              </p>
+            ) : (
+              <div>
+                {cartItems.map((item) => (
+                  <div
+                    key={`${item.id}-${item.m}`}
+                    style={{
+                      display: 'flex',
+                      gap: '15px',
+                      padding: '15px 0',
+                      borderBottom: '1px solid #f0f0f0'
+                    }}
+                  >
+                    <img
+                      src={item.img}
+                      alt={item.n}
+                      style={{
+                        width: '80px',
+                        height: '80px',
+                        objectFit: 'cover',
+                        borderRadius: '4px'
+                      }}
+                    />
+                    <div style={{ flex: 1 }}>
+                      <h3 style={{ margin: '0 0 5px 0', fontSize: '14px', fontWeight: 'normal' }}>
+                        {item.n}
+                      </h3>
+                      <p style={{ margin: '0 0 10px 0', fontSize: '16px', fontWeight: 'bold', color: '#FF6835' }}>
+                        {item.p}
+                      </p>
+                      <button
+                        onClick={() => setCartItems(prev => prev.filter(i => !(i.id === item.id && i.m === item.m)))}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          color: '#999',
+                          cursor: 'pointer',
+                          fontSize: '18px',
+                          padding: '0'
+                        }}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Footer */}
+          {cartItems.length > 0 && (
+            <div style={{
+              padding: '20px',
+              borderTop: '1px solid #e0e0e0',
+              backgroundColor: '#f9f9f9'
+            }}>
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                marginBottom: '15px',
+                fontSize: '18px',
+                fontWeight: 'bold'
+              }}>
+                <span>Total:</span>
+                <span style={{ color: '#FF6835' }}>
+                  ${cartTotal.toLocaleString('es-AR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                </span>
+              </div>
+              <button
+                onClick={() => {
+                  setShowCart(false);
+                  navigate('/checkout');
+                }}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  backgroundColor: '#FF6835',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '4px',
+                  fontSize: '16px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer'
+                }}
+              >
+                Ir al checkout
+              </button>
+            </div>
+          )}
+        </div>
+      )}
       
     </div>
   );

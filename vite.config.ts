@@ -16,6 +16,8 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
       // Alias para módulos de Charlie
       '@modulos': path.resolve(__dirname, '../../Charlie/Modulos'),
+      // Alias para Constructor
+      '@constructor': path.resolve(__dirname, '../Constructor/src'),
     },
   },
 

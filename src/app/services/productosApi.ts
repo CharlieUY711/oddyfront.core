@@ -1,16 +1,5 @@
-/* =====================================================
-   Productos API Service — Frontend ↔ Backend
-   Charlie Marketplace Builder v1.5
-   ===================================================== */
-import { projectId, publicAnonKey } from '../../utils/supabase/info';
+import { supabase } from '../../utils/supabase/client';
 
-const BASE = `https://${projectId}.supabase.co/functions/v1/api/productos`;
-const HEADERS = {
-  'Content-Type': 'application/json',
-  'Authorization': `Bearer ${publicAnonKey}`,
-};
-
-// ── Types ────────────────────────────────────────────────────────────
 export interface ProductoMarket {
   id: string;
   nombre: string;
@@ -89,24 +78,43 @@ export interface ProductosFilters {
   order_dir?: 'asc' | 'desc';
 }
 
-// ── Market Products ───────────────────────────────────────────────────
-
 export async function fetchProductosMarket(filters?: ProductosFilters): Promise<ProductoMarket[]> {
   try {
-    const params = new URLSearchParams();
-    if (filters?.departamento_id) params.set('departamento_id', filters.departamento_id);
-    if (filters?.vendedor_id) params.set('vendedor_id', filters.vendedor_id);
-    if (filters?.estado) params.set('estado', filters.estado);
-    if (filters?.search) params.set('search', filters.search);
-    if (filters?.limit) params.set('limit', String(filters.limit));
-    if (filters?.offset) params.set('offset', String(filters.offset));
-    if (filters?.order_by) params.set('order_by', filters.order_by);
-    if (filters?.order_dir) params.set('order_dir', filters.order_dir);
-
-    const res = await fetch(`${BASE}/market?${params}`, { headers: HEADERS });
-    const json = await res.json();
-    if (json.error) throw new Error(json.error);
-    return json.data || [];
+    let query = supabase
+      .from('productos_market')
+      .select('*, departamento:departamentos(id, nombre, color), vendedor:personas(id, nombre)');
+    
+    if (filters?.departamento_id) {
+      query = query.eq('departamento_id', filters.departamento_id);
+    }
+    if (filters?.vendedor_id) {
+      query = query.eq('vendedor_id', filters.vendedor_id);
+    }
+    if (filters?.estado) {
+      query = query.eq('estado', filters.estado);
+    }
+    if (filters?.search) {
+      query = query.or(`nombre.ilike.%${filters.search}%,descripcion.ilike.%${filters.search}%`);
+    }
+    if (filters?.limit) {
+      query = query.limit(filters.limit);
+    }
+    if (filters?.offset) {
+      query = query.range(filters.offset, filters.offset + (filters.limit || 10) - 1);
+    }
+    
+    const orderBy = filters?.order_by || 'created_at';
+    const orderDir = filters?.order_dir || 'desc';
+    query = query.order(orderBy, { ascending: orderDir === 'asc' });
+    
+    const { data, error } = await query;
+    
+    if (error) {
+      console.error('Error fetching productos market:', error);
+      throw new Error(error.message || 'Error cargando productos market');
+    }
+    
+    return data || [];
   } catch (error) {
     console.error('Error fetching productos market:', error);
     throw error;
@@ -115,10 +123,18 @@ export async function fetchProductosMarket(filters?: ProductosFilters): Promise<
 
 export async function fetchProductoMarketById(id: string): Promise<ProductoMarket | null> {
   try {
-    const res = await fetch(`${BASE}/market/${id}`, { headers: HEADERS });
-    const json = await res.json();
-    if (json.error) throw new Error(json.error);
-    return json.data || null;
+    const { data, error } = await supabase
+      .from('productos_market')
+      .select('*, departamento:departamentos(id, nombre, color), vendedor:personas(id, nombre)')
+      .eq('id', id)
+      .single();
+    
+    if (error) {
+      console.error('Error fetching producto market:', error);
+      return null;
+    }
+    
+    return data;
   } catch (error) {
     console.error('Error fetching producto market:', error);
     throw error;
@@ -127,14 +143,18 @@ export async function fetchProductoMarketById(id: string): Promise<ProductoMarke
 
 export async function createProductoMarket(producto: Partial<ProductoMarket>): Promise<ProductoMarket> {
   try {
-    const res = await fetch(`${BASE}/market`, {
-      method: 'POST',
-      headers: HEADERS,
-      body: JSON.stringify(producto),
-    });
-    const json = await res.json();
-    if (json.error) throw new Error(json.error);
-    return json.data;
+    const { data, error } = await supabase
+      .from('productos_market')
+      .insert(producto)
+      .select()
+      .single();
+    
+    if (error) {
+      console.error('Error creating producto market:', error);
+      throw new Error(error.message || 'Error creando producto market');
+    }
+    
+    return data;
   } catch (error) {
     console.error('Error creating producto market:', error);
     throw error;
@@ -143,14 +163,22 @@ export async function createProductoMarket(producto: Partial<ProductoMarket>): P
 
 export async function updateProductoMarket(id: string, producto: Partial<ProductoMarket>): Promise<ProductoMarket> {
   try {
-    const res = await fetch(`${BASE}/market/${id}`, {
-      method: 'PUT',
-      headers: HEADERS,
-      body: JSON.stringify(producto),
-    });
-    const json = await res.json();
-    if (json.error) throw new Error(json.error);
-    return json.data;
+    const { data, error } = await supabase
+      .from('productos_market')
+      .update({
+        ...producto,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) {
+      console.error('Error updating producto market:', error);
+      throw new Error(error.message || 'Error actualizando producto market');
+    }
+    
+    return data;
   } catch (error) {
     console.error('Error updating producto market:', error);
     throw error;
@@ -159,36 +187,58 @@ export async function updateProductoMarket(id: string, producto: Partial<Product
 
 export async function deleteProductoMarket(id: string): Promise<void> {
   try {
-    const res = await fetch(`${BASE}/market/${id}`, {
-      method: 'DELETE',
-      headers: HEADERS,
-    });
-    const json = await res.json();
-    if (json.error) throw new Error(json.error);
+    const { error } = await supabase
+      .from('productos_market')
+      .delete()
+      .eq('id', id);
+    
+    if (error) {
+      console.error('Error deleting producto market:', error);
+      throw new Error(error.message || 'Error eliminando producto market');
+    }
   } catch (error) {
     console.error('Error deleting producto market:', error);
     throw error;
   }
 }
 
-// ── Second Hand Products ──────────────────────────────────────────────
-
 export async function fetchProductosSecondHand(filters?: ProductosFilters): Promise<ProductoSecondHand[]> {
   try {
-    const params = new URLSearchParams();
-    if (filters?.departamento_id) params.set('departamento_id', filters.departamento_id);
-    if (filters?.vendedor_id) params.set('vendedor_id', filters.vendedor_id);
-    if (filters?.estado) params.set('estado', filters.estado);
-    if (filters?.search) params.set('search', filters.search);
-    if (filters?.limit) params.set('limit', String(filters.limit));
-    if (filters?.offset) params.set('offset', String(filters.offset));
-    if (filters?.order_by) params.set('order_by', filters.order_by);
-    if (filters?.order_dir) params.set('order_dir', filters.order_dir);
-
-    const res = await fetch(`${BASE}/secondhand?${params}`, { headers: HEADERS });
-    const json = await res.json();
-    if (json.error) throw new Error(json.error);
-    return json.data || [];
+    let query = supabase
+      .from('productos_secondhand')
+      .select('*, departamento:departamentos(id, nombre, color), vendedor:personas(id, nombre)');
+    
+    if (filters?.departamento_id) {
+      query = query.eq('departamento_id', filters.departamento_id);
+    }
+    if (filters?.vendedor_id) {
+      query = query.eq('vendedor_id', filters.vendedor_id);
+    }
+    if (filters?.estado) {
+      query = query.eq('estado', filters.estado);
+    }
+    if (filters?.search) {
+      query = query.or(`nombre.ilike.%${filters.search}%,descripcion.ilike.%${filters.search}%`);
+    }
+    if (filters?.limit) {
+      query = query.limit(filters.limit);
+    }
+    if (filters?.offset) {
+      query = query.range(filters.offset, filters.offset + (filters.limit || 10) - 1);
+    }
+    
+    const orderBy = filters?.order_by || 'created_at';
+    const orderDir = filters?.order_dir || 'desc';
+    query = query.order(orderBy, { ascending: orderDir === 'asc' });
+    
+    const { data, error } = await query;
+    
+    if (error) {
+      console.error('Error fetching productos secondhand:', error);
+      throw new Error(error.message || 'Error cargando productos secondhand');
+    }
+    
+    return data || [];
   } catch (error) {
     console.error('Error fetching productos secondhand:', error);
     throw error;
@@ -197,10 +247,18 @@ export async function fetchProductosSecondHand(filters?: ProductosFilters): Prom
 
 export async function fetchProductoSecondHandById(id: string): Promise<ProductoSecondHand | null> {
   try {
-    const res = await fetch(`${BASE}/secondhand/${id}`, { headers: HEADERS });
-    const json = await res.json();
-    if (json.error) throw new Error(json.error);
-    return json.data || null;
+    const { data, error } = await supabase
+      .from('productos_secondhand')
+      .select('*, departamento:departamentos(id, nombre, color), vendedor:personas(id, nombre)')
+      .eq('id', id)
+      .single();
+    
+    if (error) {
+      console.error('Error fetching producto secondhand:', error);
+      return null;
+    }
+    
+    return data;
   } catch (error) {
     console.error('Error fetching producto secondhand:', error);
     throw error;
@@ -209,14 +267,18 @@ export async function fetchProductoSecondHandById(id: string): Promise<ProductoS
 
 export async function createProductoSecondHand(producto: Partial<ProductoSecondHand>): Promise<ProductoSecondHand> {
   try {
-    const res = await fetch(`${BASE}/secondhand`, {
-      method: 'POST',
-      headers: HEADERS,
-      body: JSON.stringify(producto),
-    });
-    const json = await res.json();
-    if (json.error) throw new Error(json.error);
-    return json.data;
+    const { data, error } = await supabase
+      .from('productos_secondhand')
+      .insert(producto)
+      .select()
+      .single();
+    
+    if (error) {
+      console.error('Error creating producto secondhand:', error);
+      throw new Error(error.message || 'Error creando producto secondhand');
+    }
+    
+    return data;
   } catch (error) {
     console.error('Error creating producto secondhand:', error);
     throw error;
@@ -225,14 +287,22 @@ export async function createProductoSecondHand(producto: Partial<ProductoSecondH
 
 export async function updateProductoSecondHand(id: string, producto: Partial<ProductoSecondHand>): Promise<ProductoSecondHand> {
   try {
-    const res = await fetch(`${BASE}/secondhand/${id}`, {
-      method: 'PUT',
-      headers: HEADERS,
-      body: JSON.stringify(producto),
-    });
-    const json = await res.json();
-    if (json.error) throw new Error(json.error);
-    return json.data;
+    const { data, error } = await supabase
+      .from('productos_secondhand')
+      .update({
+        ...producto,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) {
+      console.error('Error updating producto secondhand:', error);
+      throw new Error(error.message || 'Error actualizando producto secondhand');
+    }
+    
+    return data;
   } catch (error) {
     console.error('Error updating producto secondhand:', error);
     throw error;
@@ -241,17 +311,17 @@ export async function updateProductoSecondHand(id: string, producto: Partial<Pro
 
 export async function deleteProductoSecondHand(id: string): Promise<void> {
   try {
-    const res = await fetch(`${BASE}/secondhand/${id}`, {
-      method: 'DELETE',
-      headers: HEADERS,
-    });
-    const json = await res.json();
-    if (json.error) throw new Error(json.error);
+    const { error } = await supabase
+      .from('productos_secondhand')
+      .delete()
+      .eq('id', id);
+    
+    if (error) {
+      console.error('Error deleting producto secondhand:', error);
+      throw new Error(error.message || 'Error eliminando producto secondhand');
+    }
   } catch (error) {
     console.error('Error deleting producto secondhand:', error);
     throw error;
   }
 }
-
-
-

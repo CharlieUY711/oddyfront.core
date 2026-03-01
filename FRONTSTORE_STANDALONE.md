@@ -227,9 +227,6 @@ export const publicAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...";
 ### URLs de Backend (Supabase Edge Functions)
 
 Todas las APIs apuntan a:
-```
-https://{projectId}.supabase.co/functions/v1/server/make-server-75638143/{endpoint}
-```
 
 Endpoints:
 - `/carrito`
