@@ -2857,7 +2857,7 @@ export default function OddyStorefront() {
 
           <div className="oddy-header-right">
             <button className="oddy-login-btn" onClick={() => setShowLoginModal(true)}>Ingreso / Registro</button>
-            <div className="oddy-cart" onClick={() => setShowCart(!showCart)} style={{ cursor: 'pointer' }}>
+            <div className="oddy-cart" onClick={() => setShowCart(!showCart)} style={{ cursor: 'pointer', position: 'relative', marginLeft: '8px' }}>
               <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <circle cx="9" cy="21" r="1"/>
                 <circle cx="20" cy="21" r="1"/>
@@ -2880,6 +2880,11 @@ export default function OddyStorefront() {
                   0
                 </text>
               </svg>
+              {cartItems.length > 0 && (
+                <span style={{ position: 'absolute', top: '2px', right: '-2px', fontSize: '9px', fontFamily: "'DM Sans', sans-serif", fontWeight: '400', color: isSH ? '#6BB87A' : '#FF6835' }}>
+                  {cartItems.length}
+                </span>
+              )}
             </div>
           </div>
         </div>
