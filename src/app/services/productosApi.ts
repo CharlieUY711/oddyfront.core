@@ -82,7 +82,7 @@ export async function fetchProductosMarket(filters?: ProductosFilters): Promise<
   try {
     let query = supabase
       .from('productos_market')
-      .select('*, departamento:departamentos(id, nombre, color), vendedor:personas(id, nombre)');
+      .select('*, departamento:departamentos(id, nombre, color)');
     
     if (filters?.departamento_id) {
       query = query.eq('departamento_id', filters.departamento_id);
@@ -125,7 +125,7 @@ export async function fetchProductoMarketById(id: string): Promise<ProductoMarke
   try {
     const { data, error } = await supabase
       .from('productos_market')
-      .select('*, departamento:departamentos(id, nombre, color), vendedor:personas(id, nombre)')
+      .select('*, departamento:departamentos(id, nombre, color)')
       .eq('id', id)
       .single();
     
@@ -206,7 +206,7 @@ export async function fetchProductosSecondHand(filters?: ProductosFilters): Prom
   try {
     let query = supabase
       .from('productos_secondhand')
-      .select('*, departamento:departamentos(id, nombre, color), vendedor:personas(id, nombre)');
+      .select('*, departamento:departamentos(id, nombre, color)');
     
     if (filters?.departamento_id) {
       query = query.eq('departamento_id', filters.departamento_id);
@@ -249,7 +249,7 @@ export async function fetchProductoSecondHandById(id: string): Promise<ProductoS
   try {
     const { data, error } = await supabase
       .from('productos_secondhand')
-      .select('*, departamento:departamentos(id, nombre, color), vendedor:personas(id, nombre)')
+      .select('*, departamento:departamentos(id, nombre, color)')
       .eq('id', id)
       .single();
     
@@ -325,3 +325,4 @@ export async function deleteProductoSecondHand(id: string): Promise<void> {
     throw error;
   }
 }
+

@@ -1,4 +1,2 @@
-// Supabase connection info
-// These values are auto-populated when you connect to Supabase via Figma Make
-export const projectId = "qhnmxvexkizcsmivfuam";
-export const publicAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFobm14dmV4a2l6Y3NtaXZmdWFtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEyMjEyODEsImV4cCI6MjA4Njc5NzI4MX0.Ifz4fJYldIGZFzhBK5PPxQeqdYzO2ZKNQ5uo8j2mYmM";
+export const projectId = "pukbgsgrtjqprijpecob";
+export const publicAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1a2Jnc2dydGpxcHJpanBlY29iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2MTM0ODYsImV4cCI6MjA5MjE4OTQ4Nn0.jAhGKonKlATdYFpTAkkE98xfFt9prykpWLiFntZUp9k";
