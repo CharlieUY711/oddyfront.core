@@ -13,7 +13,7 @@ interface CarritoItemCompleto extends CarritoItem {
   loading?: boolean;
 }
 
-const fmtNum = (n: number) => '$' + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+const fmtNum = (n: number) => '$ ' + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 
 export default function CarritoPage() {
   const navigate = useNavigate();
@@ -407,3 +407,4 @@ export default function CarritoPage() {
     </div>
   );
 }
+

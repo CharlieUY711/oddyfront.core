@@ -29,7 +29,7 @@ interface CartItem { id: number; img: string; n: string; p: string; pNum: number
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const parsePrice = (p: string) => parseInt(p.replace(/[\$\.]/g, ''), 10);
-const fmtNum = (n: number) => '$' + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+const fmtNum = (n: number) => '$ ' + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 const separatePrice = (price: string) => {
   if (!price) return price;
   // Eliminar puntos de los miles
@@ -3377,7 +3377,7 @@ export default function OddyStorefront() {
                         {item.n}
                       </h3>
                       <p style={{ margin: '0 0 10px 0', fontSize: '16px', fontWeight: 'bold', color: '#FF6835' }}>
-                        {item.p}
+                        {'$ ' + item.p}
                       </p>
                       <button
                         onClick={() => setCartItems(prev => prev.filter(i => !(i.id === item.id && i.m === item.m)))}
