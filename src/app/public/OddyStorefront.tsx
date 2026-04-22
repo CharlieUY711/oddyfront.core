@@ -2863,11 +2863,23 @@ export default function OddyStorefront() {
                 <circle cx="20" cy="21" r="1"/>
                 <path d="M5 1l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6" strokeLinecap="round" strokeLinejoin="round"/>
                 <path d="M5 1L1 1" strokeLinecap="round"/>
-                {cartItems.length > 0 && (
-                  <text x="14" y="11.5" fontSize="9" fill={isSH ? '#6BB87A' : '#FF6835'} fontWeight="bold" textAnchor="middle" dominantBaseline="middle" style={{ fontFamily: 'Arial, sans-serif', pointerEvents: 'none' }}>
-                    {cartItems.length}
-                  </text>
-                )}
+                <text 
+                  x="14" 
+                  y="11.5" 
+                  fontSize="9" 
+                  fill="#FF6835" 
+                  fontWeight="normal"
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  style={{ 
+                    fontFamily: 'Times New Roman, serif', 
+                    fontWeight: 'normal',
+                    pointerEvents: 'none'
+                  }}
+                >
+                  0
+                </text>
+              </svg>
             </div>
           </div>
         </div>
