@@ -384,12 +384,12 @@ body {
   align-items: center;
   justify-content: center;
   gap: 15px;
-  width: auto;
+  width: 100%;
   background: transparent;
   padding: 0;
   box-sizing: border-box;
-  margin: 10px auto 0;
-  left: -37px;
+  margin: 0 auto;
+  padding: 10px 0;
 }
 .oddy-categories-menu span {
   color: #ffffff;
@@ -2152,3 +2152,9 @@ input[type="range"]::-moz-range-track {
     width: 160px !important;
   }
 }
+
+
+
+
+
+
