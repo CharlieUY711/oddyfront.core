@@ -2846,12 +2846,9 @@ export default function OddyStorefront() {
               </svg>
             </div>
 
-            <button 
-              className="oddy-market-btn" 
-              onClick={() => setMode(isSH ? 'mkt' : 'sh')}
-            >
-              {isSH ? 'Market' : 'Second Hand'}
-            </button>
+            <span style={{ color: '#fff', fontWeight: 800, fontSize: '1.05rem', minWidth: '140px', display: 'inline-block', textAlign: 'center' }}>
+              {isSH ? 'Second Hand' : 'Market'}
+            </span>
           </div>
 
           <div className="oddy-search">
@@ -3054,8 +3051,11 @@ export default function OddyStorefront() {
         </div>
       </header>
       {/* Barra de modo */}
-      <div style={{ position: 'fixed', top: headerHeight, left: 0, right: 0, width: '100%', height: '48px', backgroundColor: isSH ? '#FF6835' : '#6BB87A', transition: 'background-color 0.4s ease', zIndex: 299, display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
-        <div ref={carouselRef} style={{ display: 'flex', gap: '6px', alignItems: 'center', overflow: 'hidden', height: '100%', padding: '6px 12px', width: '100%' }}>
+      <div style={{ position: 'fixed', top: headerHeight, left: 0, right: 0, width: '100%', height: '48px', backgroundColor: isSH ? '#FF6835' : '#6BB87A', transition: 'background-color 0.4s ease', zIndex: 299, display: 'flex', alignItems: 'center', gap: '12px', paddingLeft: '12px', paddingRight: '12px' }}>
+        <button onClick={() => setMode(isSH ? 'mkt' : 'sh')} className="oddy-login-btn oddy-mode-btn" style={{ flexShrink: 0, minWidth: '140px', backgroundColor: 'transparent', borderColor: 'rgba(255,255,255,0.6)' }}>
+          {isSH ? '🛍 Market' : '♻️ Second Hand'}
+        </button>
+        <div ref={carouselRef} style={{ display: 'flex', gap: '6px', alignItems: 'center', overflow: 'hidden', height: '100%', padding: '6px 0', flex: 1 }}>
           {Array(10).fill(null).flatMap(() => (isSH ? MP : SH)).map((p, idx) => (
             <div key={`c${p.id}-${idx}`} style={{ width: '36px', height: '36px', borderRadius: '6px', overflow: 'hidden', border: '1.5px solid rgba(255,255,255,0.4)', flexShrink: 0, cursor: 'pointer', transition: 'transform 0.2s' }}
               onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.1)')}
@@ -3065,7 +3065,6 @@ export default function OddyStorefront() {
           ))}
         </div>
       </div>
-
       {/* DEPT STRIP */}
       <div className="oddy-dstrip" style={{ display: 'none' }}>
       </div>
