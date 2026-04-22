@@ -119,6 +119,7 @@ body {
 
 /* LEFT SIDE */
 .oddy-header-left {
+  width: 200px;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -218,6 +219,7 @@ body {
 
 /* RIGHT SIDE */
 .oddy-header-right {
+  width: 200px;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -670,7 +672,7 @@ body {
 
 /* ── MAIN ────────────────────────────────────────────────────────── */
 .oddy-main {
-  padding-top: 80px;
+  padding-top: 145px;
   padding-bottom: 70px;
   padding-left: 8px;
   padding-right: 8px;
