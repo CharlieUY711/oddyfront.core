@@ -47,8 +47,8 @@ export interface ShProduct {
 
 // Transformar ProductoMarket a MktProduct
 function transformMarketProduct(p: ProductoMarket, deptColors: Record<string, string>): MktProduct {
-  const precio = p.precio ? `$${p.precio.toLocaleString('es-UY')}` : '$0';
-  const precioOriginal = p.precio_original ? `$${p.precio_original.toLocaleString('es-UY')}` : null;
+  const precio = p.precio ? p.precio.toLocaleString('es-UY') : '0';
+  const precioOriginal = p.precio_original ? p.precio_original.toLocaleString('es-UY') : null;
   const descuento = precioOriginal && p.precio_original && p.precio
     ? Math.round(((p.precio_original - p.precio) / p.precio_original) * 100)
     : null;
@@ -74,8 +74,8 @@ function transformMarketProduct(p: ProductoMarket, deptColors: Record<string, st
 
 // Transformar ProductoSecondHand a ShProduct
 function transformSecondHandProduct(p: ProductoSecondHand, deptColors: Record<string, string>): ShProduct {
-  const precio = p.precio ? `$${p.precio.toLocaleString('es-UY')}` : '$0';
-  const precioOriginal = p.precio_original ? `Nuevo $${p.precio_original.toLocaleString('es-UY')}` : '';
+  const precio = p.precio ? p.precio.toLocaleString('es-UY') : '0';
+  const precioOriginal = p.precio_original ? p.precio_original.toLocaleString('es-UY') : '';
   const condicionMap: Record<string, number> = {
     'Excelente': 5,
     'Muy bueno': 4,
@@ -162,5 +162,6 @@ export function useProductos() {
     error,
   };
 }
+
 
 
