@@ -70,15 +70,14 @@ export default function CheckoutPage() {
     if (!nombre || !email) { alert("Por favor completá nombre y email"); return; }
     setProcesando(true);
     try {
-      const { data, error } = await supabase.from("ordenes").insert({
-        nombre_cliente: nombre, email_cliente: email,
-        telefono_cliente: telefono, direccion_entrega: direccion,
-        moneda: monedaPago, tipo_cambio: tipoCambio?.venta,
-        total_uyu: calcularTotalUYU(), total_usd: calcularTotalUSD(),
-        estado: "pendiente",
-        items: items.map(i => ({ producto_id: i.producto_id, producto_tipo: i.producto_tipo, cantidad: i.cantidad, precio_unitario: i.precio_unitario, moneda: i.moneda || "UYU" })),
-      }).select().single();
-      if (error) throw error;
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch(`https://pukbgsgrtjqprijpecob.supabase.co/functions/v1/crear-orden`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${session?.access_token}` },
+        body: JSON.stringify({ items: items.map(i => ({ product_id: i.producto_id, quantity: i.cantidad })) }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Error creando orden");
       await vaciarCarrito();
       navigate(`/orden/${data.id}`);
     } catch (err) { console.error(err); alert("Error procesando la orden."); }

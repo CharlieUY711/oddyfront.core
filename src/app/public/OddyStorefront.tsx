@@ -4,7 +4,7 @@
    Frontstore principal: Market + Segunda Mano
    ===================================================== */
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router';
+import { Link, useNavigate, useSearchParams } from 'react-router';
 import { supabase } from '../../utils/supabase/client';
 import { useProductos } from '../hooks/useProductos';
 import { agregarAlCarrito } from '../services/carritoApi';
@@ -2150,7 +2150,9 @@ function LoginModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
       if (data.session) {
         // Login exitoso, redirigir a admin
         onClose();
-        navigate('/admin');
+        const redirectTo = new URLSearchParams(window.location.search).get('redirect') || '/';
+        window.history.replaceState({}, '', window.location.pathname);
+        navigate(redirectTo);
       }
     } catch (err: any) {
       setError(err.message || 'Error al iniciar sesión. Verifique sus credenciales.');
@@ -2563,6 +2565,7 @@ function LoginModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
 
 export default function OddyStorefront() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   // Cargar productos desde la API
   const { productosMarket: apiMP, productosSecondHand: apiSH, deptColors: apiDeptColors, departamentos, loading: productosLoading } = useProductos();
   
@@ -2572,13 +2575,13 @@ export default function OddyStorefront() {
   const DEPT_COLORS_FINAL = Object.keys(apiDeptColors).length > 0 ? apiDeptColors : DEPT_COLORS;
   
   const [mode,       setMode]       = useState<'mkt' | 'sh'>('mkt');
-  const [showLoginModal, setShowLoginModal] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      return params.get('login') === 'true';
+  const [showLoginModal, setShowLoginModal] = useState(false);
+
+  useEffect(() => {
+    if (searchParams.get('login') === 'true') {
+      setShowLoginModal(true);
     }
-    return false;
-  });
+  }, [searchParams]);
   const [activeDept, setActiveDept] = useState(0);
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [flash,      setFlash]      = useState(false);
