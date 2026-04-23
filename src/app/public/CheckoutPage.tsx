@@ -1,3 +1,21 @@
+  const handlePagar = async () => {
+    setPayLoading(true);
+    setPayError("");
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch("https://pukbgsgrtjqprijpecob.supabase.co/functions/v1/create_preference", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${session?.access_token}` },
+        body: JSON.stringify({ order_id: orderId }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Error en MercadoPago");
+      window.location.href = data.init_point;
+    } catch (err) {
+      setPayError(err.message || "Error al iniciar el pago");
+      setPayLoading(false);
+    }
+  };
 import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router";
 import { getCarrito, vaciarCarrito } from "../services/carritoApi";
@@ -228,3 +246,5 @@ export default function CheckoutPage() {
     </div>
   );
 }
+  const [payLoading, setPayLoading] = useState(false);
+  const [payError, setPayError] = useState("");
