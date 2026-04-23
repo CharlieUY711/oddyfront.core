@@ -22,6 +22,7 @@ export default function AdminLayout() {
     { path: "/admin/products",  label: "📦 Productos" },
     { path: "/admin/orders",    label: "🛍 Órdenes" },
     { path: "/admin/analytics", label: "📈 Analytics" },
+    { path: "/admin/catalog", label: "📋 Catálogo" },
     { path: "/admin/ml",        label: "🟡 MercadoLibre" },
   ];
 

@@ -16,6 +16,7 @@ import AdminDashboard         from "./admin/pages/AdminDashboard";
 import AdminProducts          from "./admin/pages/AdminProducts";
 import AdminOrders            from "./admin/pages/AdminOrders";
 import AdminAnalytics         from "./admin/pages/AdminAnalytics";
+import AdminCatalog from './admin/pages/AdminCatalog';
 import AdminML                from "./admin/pages/AdminML";
 
 export const TODAS_LAS_RUTAS: (RouteObject & { id: string })[] = [
@@ -43,6 +44,7 @@ export const TODAS_LAS_RUTAS: (RouteObject & { id: string })[] = [
       { id: "admin-products",   path: "products",   Component: AdminProducts },
       { id: "admin-orders",     path: "orders",     Component: AdminOrders },
       { id: "admin-analytics",  path: "analytics",  Component: AdminAnalytics },
+      { id: "admin-catalog", path: "catalog", Component: AdminCatalog },
       { id: "admin-ml",         path: "ml",         Component: AdminML },
     ] as RouteObject[],
   },
