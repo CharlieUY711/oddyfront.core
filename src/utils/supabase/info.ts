@@ -1,2 +1,2 @@
-export const projectId = "pukbgsgrtjqprijpecob";
-export const publicAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1a2Jnc2dydGpxcHJpanBlY29iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2MTM0ODYsImV4cCI6MjA5MjE4OTQ4Nn0.jAhGKonKlATdYFpTAkkE98xfFt9prykpWLiFntZUp9k";
+export const projectId = import.meta.env.VITE_SUPABASE_URL?.split('.')?.[0]?.replace('https://', '') ?? '';
+export const publicAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY ?? '';

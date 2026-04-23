@@ -5,8 +5,8 @@ import { getTipoCambioUSD, formatearPrecio, convertirUYUaUSD, convertirUSDaUYU }
 import { supabase } from "../../utils/supabase/client";
 import { useRequireAuth } from "../hooks/useRequireAuth";
 
-const CREAR_ORDEN_URL = "https://pukbgsgrtjqprijpecob.supabase.co/functions/v1/crear-orden";
-const CREATE_PREF_URL = "https://pukbgsgrtjqprijpecob.supabase.co/functions/v1/create_preference";
+const CREAR_ORDEN_URL = `${import.meta.env.VITE_API_URL}/crear-orden`;
+const CREATE_PREF_URL = `${import.meta.env.VITE_API_URL}/create_preference`;
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
