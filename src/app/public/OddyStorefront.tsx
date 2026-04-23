@@ -155,6 +155,21 @@ const IconBack = ({ color = "#fff" }: { color?: string }) => (
   </svg>
 );
 
+
+async function trackEvent(eventType: string, metadata: Record<string, unknown> = {}) {
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    await fetch(`${import.meta.env.VITE_API_URL}/track-event`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(session?.access_token ? { 'Authorization': `Bearer ${session.access_token}` } : {}),
+      },
+      body: JSON.stringify({ event_type: eventType, metadata }),
+    });
+  } catch (_) {}
+}
+
 // ── Sub-components ────────────────────────────────────────────────────────────
 function Dots({ count }: { count: number }) {
   // Los puntos mantienen su color original (verde para Second Hand según CSS)
@@ -2356,6 +2371,7 @@ export default function OddyStorefront() {
       // Agregar al carrito en la API
       // Nota: Los IDs en el storefront son números, pero en la API son UUIDs
       // Por ahora mantenemos el estado local para compatibilidad
+      void trackEvent('add_to_cart', { product_id: String(p.id), product_name: p.n, tipo: m });
       await agregarAlCarrito(
         String(p.id), // Convertir a string
         m === 'mkt' ? 'market' : 'secondhand',
@@ -2969,7 +2985,8 @@ export default function OddyStorefront() {
               <button
                 onClick={() => {
                   setShowCart(false);
-                  navigate('/checkout');
+                  void trackEvent('checkout_started', { items_count: cartItems.length });
+        navigate('/checkout');
                 }}
                 style={{
                   width: '100%',
