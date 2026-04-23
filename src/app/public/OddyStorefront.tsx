@@ -717,8 +717,8 @@ function FlipCard({ p, onAdd, onFlipped, deptColors, cartItems, isInCart }: {
           </div>
 
           <div className="oddy-bottom">
-            <button className="oddy-add-btn" onClick={handleAdd} style={btnStyle}>
-              {label}
+            <button className="oddy-add-btn" onClick={handleAdd} disabled={p.stock === 0} style={p.stock === 0 ? { background: '#ccc', cursor: 'not-allowed', color: '#888' } : btnStyle}>
+              {p.stock === 0 ? 'Sin stock' : label}
             </button>
           </div>
         </div>
@@ -927,8 +927,8 @@ function FlipCard({ p, onAdd, onFlipped, deptColors, cartItems, isInCart }: {
             </div>
           </div>
           <div className="oddy-bottom">
-            <button className="oddy-add-btn" onClick={handleAdd} style={btnStyle}>
-              {label}
+            <button className="oddy-add-btn" onClick={handleAdd} disabled={p.stock === 0} style={p.stock === 0 ? { background: '#ccc', cursor: 'not-allowed', color: '#888' } : btnStyle}>
+              {p.stock === 0 ? 'Sin stock' : label}
             </button>
           </div>
         </div>
@@ -1505,9 +1505,9 @@ function SlideCard({ p, isOpen, dir, onToggle, onAdd, deptColors, cartItems, isI
                 <div className="oddy-price">$ {p.p}</div>
               </div>
               <div className="oddy-bottom">
-                <button className="oddy-add-btn" onClick={handleAdd} style={style}>
-                  {label}
-                </button>
+                <button className="oddy-add-btn" onClick={handleAdd} disabled={p.stock === 0} style={p.stock === 0 ? { background: '#ccc', cursor: 'not-allowed', color: '#888' } : style}>
+              {p.stock === 0 ? 'Sin stock' : label}
+            </button>
               </div>
             </div>
             {/* BACK FACE - usar la misma estructura que FlipCard */}
@@ -1657,9 +1657,9 @@ function SlideCard({ p, isOpen, dir, onToggle, onAdd, deptColors, cartItems, isI
                   </div>
                 </div>
                 <div className="oddy-bottom">
-                  <button className="oddy-add-btn" onClick={handleAdd} style={style}>
-                    {label}
-                  </button>
+                  <button className="oddy-add-btn" onClick={handleAdd} disabled={p.stock === 0} style={p.stock === 0 ? { background: '#ccc', cursor: 'not-allowed', color: '#888' } : style}>
+              {p.stock === 0 ? 'Sin stock' : label}
+            </button>
                 </div>
               </div>
             </div>
@@ -1870,9 +1870,9 @@ function SlideCard({ p, isOpen, dir, onToggle, onAdd, deptColors, cartItems, isI
         </div>
 
         <div className="oddy-bottom">
-          <button className="oddy-add-btn" onClick={handleAdd} style={style}>
-            {label}
-          </button>
+          <button className="oddy-add-btn" onClick={handleAdd} disabled={p.stock === 0} style={p.stock === 0 ? { background: '#ccc', cursor: 'not-allowed', color: '#888' } : style}>
+              {p.stock === 0 ? 'Sin stock' : label}
+            </button>
         </div>
       </div>
 
@@ -2081,8 +2081,8 @@ function SlideCard({ p, isOpen, dir, onToggle, onAdd, deptColors, cartItems, isI
             </div>
           </div>
           <div className="oddy-bottom">
-            <button className="oddy-add-btn" onClick={handleAdd} style={style}>
-              {label}
+            <button className="oddy-add-btn" onClick={handleAdd} disabled={p.stock === 0} style={p.stock === 0 ? { background: '#ccc', cursor: 'not-allowed', color: '#888' } : style}>
+              {p.stock === 0 ? 'Sin stock' : label}
             </button>
           </div>
         </div>
