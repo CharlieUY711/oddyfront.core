@@ -2250,6 +2250,15 @@ export default function OddyStorefront() {
       setShowLoginModal(true);
     }
   }, [searchParams]);
+  const [currentUser, setCurrentUser] = useState<any>(null);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => setCurrentUser(user));
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
+      setCurrentUser(session?.user ?? null);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
   const [activeDept, setActiveDept] = useState(0);
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [flash,      setFlash]      = useState(false);
@@ -2533,7 +2542,14 @@ export default function OddyStorefront() {
           </div>
 
           <div className="oddy-header-right">
-            <button className="oddy-login-btn" onClick={() => setShowLoginModal(true)}>Ingreso / Registro</button>
+            {currentUser ? (
+              <Link to="/dashboard/ordenes" style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 12px', borderRadius: '6px', border: '1.5px solid #fff', color: '#fff', textDecoration: 'none', fontWeight: 600, fontSize: '0.85rem', fontFamily: "'DM Sans', sans-serif" }}>
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                {currentUser.user_metadata?.nombre || currentUser.email?.split('@')[0]}
+              </Link>
+            ) : (
+              <button className="oddy-login-btn" onClick={() => setShowLoginModal(true)}>Ingreso / Registro</button>
+            )}
             <div className="oddy-cart" onClick={() => setShowCart(!showCart)} style={{ cursor: 'pointer', position: 'relative' }}>
               <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <circle cx="9" cy="21" r="1"/>
