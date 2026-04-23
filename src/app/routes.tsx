@@ -4,6 +4,7 @@ import CarritoPage    from "./public/CarritoPage";
 import CheckoutPage   from "./public/CheckoutPage";
 import OrdenPage      from "./public/OrdenPage";
 import MensajePage    from "./public/MensajePage";
+import MisPublicacionesPage from './public/MisPublicacionesPage';
 import DashboardPage from './public/DashboardPage';
 import SuccessPage    from "./public/SuccessPage";
 import FailurePage    from "./public/FailurePage";
@@ -16,6 +17,7 @@ export const TODAS_LAS_RUTAS: (RouteObject & { id: string })[] = [
   { id: "checkout",        path: "/checkout",  Component: CheckoutPage },
   { id: "orden",           path: "/orden/:id", Component: OrdenPage },
   { id: "etiqueta-emotiva",path: "/m/:token",  Component: MensajePage },
+  { id: "mis-publicaciones", path: "/mis-publicaciones", Component: MisPublicacionesPage },
   { id: "dashboard", path: "/dashboard", Component: DashboardPage },
   { id: "success",         path: "/success",   Component: SuccessPage },
   { id: "failure",         path: "/failure",   Component: FailurePage },
