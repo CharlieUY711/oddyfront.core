@@ -2,7 +2,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 Deno.serve(async (req) => {
   try {
-    if (req.method !== "POST") return new Response("ok", { status: 200 });
+    if (req.method === "GET") return new Response("ok", { status: 200 });
 
     const body = await req.json().catch(() => ({}));
 
@@ -31,14 +31,13 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
 
-    const { data: orden, error } = await supabase
+    const { data: orden } = await supabase
       .from("ordenes")
       .select("id, estado")
       .eq("id", orderId)
       .single();
 
-    if (error || !orden) return new Response("ok", { status: 200 });
-
+    if (!orden) return new Response("ok", { status: 200 });
     if (orden.estado === "pagado") return new Response("ok", { status: 200 });
 
     await supabase
