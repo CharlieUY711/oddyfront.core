@@ -2113,456 +2113,124 @@ function CrossSellBar({ isSH, mp, sh }: { isSH: boolean; mp: MktProduct[]; sh: S
 // ── Main Component ────────────────────────────────────────────────────────────
 // ── Login Modal Component ─────────────────────────────────────────────────────
 function LoginModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+  const [modo, setModo] = useState<'login' | 'registro'>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [nombre, setNombre] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [oauthLoading, setOauthLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [resetLoading, setResetLoading] = useState(false);
-  const [resetMessage, setResetMessage] = useState<string | null>(null);
+  const [mensaje, setMensaje] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  useEffect(() => { if (error) setError(null); }, [email, password]);
 
   const handleLogin = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    
-    if (!email.trim() || !password.trim()) {
-      setError('Por favor complete todos los campos');
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-
+    if (!email.trim() || !password.trim()) { setError('Completá email y contraseña'); return; }
+    setLoading(true); setError(null);
     try {
-      // Intentar login con email o teléfono
-      // Supabase acepta email, así que si es un teléfono, necesitaríamos manejarlo diferente
-      // Por ahora asumimos que es email
-      const { data, error: authError } = await supabase.auth.signInWithPassword({
-        email: email.trim(),
-        password: password,
-      });
-
-      if (authError) {
-        throw authError;
-      }
-
+      const { data, error: authError } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+      if (authError) throw authError;
       if (data.session) {
-        // Login exitoso, redirigir a admin
         onClose();
         const redirectTo = new URLSearchParams(window.location.search).get('redirect') || '/';
         window.history.replaceState({}, '', window.location.pathname);
         navigate(redirectTo);
       }
     } catch (err: any) {
-      setError(err.message || 'Error al iniciar sesión. Verifique sus credenciales.');
-    } finally {
-      setLoading(false);
-    }
+      setError(err.message || 'Error al iniciar sesión');
+    } finally { setLoading(false); }
   };
 
-  const handleOAuthLogin = async (provider: 'google' | 'facebook') => {
-    setOauthLoading(provider);
-    setError(null);
-
+  const handleRegistro = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!email.trim() || !password.trim()) { setError('Completá email y contraseña'); return; }
+    if (password.length < 6) { setError('La contraseña debe tener al menos 6 caracteres'); return; }
+    setLoading(true); setError(null);
     try {
-      const { data, error: oauthError } = await supabase.auth.signInWithOAuth({
-        provider: provider,
-        options: {
-          redirectTo: `${window.location.origin}/admin`,
-        },
+      const { error: authError } = await supabase.auth.signUp({
+        email: email.trim(),
+        password,
+        options: { data: { nombre: nombre.trim() } }
       });
-
-      if (oauthError) {
-        throw oauthError;
-      }
-      // El flujo OAuth redirige automáticamente, no necesitamos hacer nada más aquí
+      if (authError) throw authError;
+      setMensaje('¡Registro exitoso! Revisá tu email para confirmar tu cuenta.');
     } catch (err: any) {
-      setError(err.message || `Error al iniciar sesión con ${provider === 'google' ? 'Google' : 'Facebook'}`);
-      setOauthLoading(null);
-    }
+      setError(err.message || 'Error al registrarse');
+    } finally { setLoading(false); }
   };
 
   const handleResetPassword = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    
-    if (!email.trim()) {
-      setError('Por favor ingrese su email para recuperar la contraseña');
-      return;
-    }
-
-    setResetLoading(true);
-    setError(null);
-    setResetMessage(null);
-
+    if (!email.trim()) { setError('Ingresá tu email para recuperar la contraseña'); return; }
     try {
-      const { error: resetError } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-        redirectTo: `${window.location.origin}/admin?reset=true`,
-      });
-
-      if (resetError) {
-        throw resetError;
-      }
-
-      setResetMessage('Se ha enviado un email con las instrucciones para recuperar tu contraseña');
-    } catch (err: any) {
-      setError(err.message || 'Error al enviar el email de recuperación');
-    } finally {
-      setResetLoading(false);
-    }
+      await supabase.auth.resetPasswordForEmail(email.trim(), { redirectTo: window.location.origin + '/reset' });
+      setMensaje('Te enviamos un email para recuperar tu contraseña');
+    } catch (err: any) { setError(err.message); }
   };
-
-  // Limpiar error cuando cambian los campos
-  useEffect(() => {
-    if (error) setError(null);
-  }, [email, password]);
 
   if (!isOpen) return null;
 
+  const inputStyle: React.CSSProperties = {
+    width: '400px', maxWidth: '90vw', padding: '12px 16px',
+    backgroundColor: '#fff', border: '2px solid #FF6835', borderRadius: '8px',
+    fontSize: '1rem', outline: 'none', boxSizing: 'border-box',
+  };
+
+  const btnPrimary: React.CSSProperties = {
+    width: '400px', maxWidth: '90vw', padding: '14px',
+    backgroundColor: loading ? '#ccc' : '#FF6835', color: '#fff',
+    border: 'none', borderRadius: '8px', fontSize: '1rem',
+    fontWeight: '700', cursor: loading ? 'not-allowed' : 'pointer',
+  };
+
   return (
-    <div
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.7)',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 10000,
-        gap: '16px',
-      }}
-      onClick={onClose}
-    >
-      {/* Mensaje de error */}
-      {error && (
-        <div
-          style={{
-            width: '400px',
-            maxWidth: '90vw',
-            padding: '12px 16px',
-            backgroundColor: '#fee',
-            border: '1px solid #fcc',
-            borderRadius: '8px',
-            color: '#c33',
-            fontSize: '0.9rem',
-            textAlign: 'center',
-          }}
-          onClick={(e) => e.stopPropagation()}
-        >
-          {error}
-        </div>
+    <div onClick={onClose} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.7)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', zIndex: 10000, gap: '16px' }}>
+
+      {/* Toggle Login / Registro */}
+      <div onClick={e => e.stopPropagation()} style={{ display: 'flex', background: 'rgba(255,255,255,0.15)', borderRadius: '8px', padding: '4px', gap: '4px', width: '400px', maxWidth: '90vw' }}>
+        {(['login', 'registro'] as const).map(m => (
+          <button key={m} onClick={() => { setModo(m); setError(null); setMensaje(null); }}
+            style={{ flex: 1, padding: '8px', borderRadius: '6px', border: 'none', cursor: 'pointer', fontWeight: 700, fontSize: '0.9rem',
+              background: modo === m ? '#fff' : 'transparent',
+              color: modo === m ? '#FF6835' : '#fff' }}>
+            {m === 'login' ? 'Ingresar' : 'Registrarse'}
+          </button>
+        ))}
+      </div>
+
+      {error && <div onClick={e => e.stopPropagation()} style={{ width: '400px', maxWidth: '90vw', padding: '12px 16px', backgroundColor: '#fee', border: '1px solid #fcc', borderRadius: '8px', color: '#c33', fontSize: '0.9rem', textAlign: 'center' }}>{error}</div>}
+      {mensaje && <div onClick={e => e.stopPropagation()} style={{ width: '400px', maxWidth: '90vw', padding: '12px 16px', backgroundColor: '#efe', border: '1px solid #cfc', borderRadius: '8px', color: '#3c3', fontSize: '0.9rem', textAlign: 'center' }}>{mensaje}</div>}
+
+      {modo === 'registro' && (
+        <input type="text" value={nombre} onChange={e => setNombre(e.target.value)} placeholder="Nombre completo" onClick={e => e.stopPropagation()} style={inputStyle} />
       )}
 
-      {/* Mensaje de éxito de recuperación */}
-      {resetMessage && (
-        <div
-          style={{
-            width: '400px',
-            maxWidth: '90vw',
-            padding: '12px 16px',
-            backgroundColor: '#efe',
-            border: '1px solid #cfc',
-            borderRadius: '8px',
-            color: '#3c3',
-            fontSize: '0.9rem',
-            textAlign: 'center',
-          }}
-          onClick={(e) => e.stopPropagation()}
-        >
-          {resetMessage}
-        </div>
+      <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" onClick={e => e.stopPropagation()} style={inputStyle} />
+
+      <div onClick={e => e.stopPropagation()} style={{ position: 'relative', width: '400px', maxWidth: '90vw' }}>
+        <input type={showPassword ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} placeholder="Contraseña"
+          style={{ ...inputStyle, width: '100%', paddingRight: '45px' }}
+          onKeyDown={e => { if (e.key === 'Enter' && !loading) modo === 'login' ? handleLogin(e as any) : handleRegistro(e as any); }} />
+        <button type="button" onClick={() => setShowPassword(!showPassword)}
+          style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#666' }}>
+          {showPassword ? '🙈' : '👁'}
+        </button>
+      </div>
+
+      {modo === 'login' && (
+        <span onClick={handleResetPassword} style={{ color: '#fff', fontWeight: '700', fontSize: '0.9rem', cursor: 'pointer', userSelect: 'none' }}>
+          Recuperar contraseña
+        </span>
       )}
 
-      {/* Botones OAuth - Google y Facebook */}
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '12px',
-          width: '400px',
-          maxWidth: '90vw',
-        }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Botón Google */}
-        <button
-          onClick={() => handleOAuthLogin('google')}
-          disabled={loading || oauthLoading !== null}
-          style={{
-            width: '100%',
-            padding: '12px 16px',
-            backgroundColor: '#fff',
-            border: '2px solid #FF6835',
-            borderRadius: '8px',
-            fontSize: '0.95rem',
-            fontWeight: '600',
-            color: '#374151',
-            cursor: loading || oauthLoading !== null ? 'not-allowed' : 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '10px',
-            transition: 'opacity 0.2s, transform 0.2s',
-            opacity: loading || oauthLoading !== null ? 0.7 : 1,
-          }}
-          onMouseEnter={(e) => {
-            if (!loading && oauthLoading === null) {
-              e.currentTarget.style.opacity = '0.9';
-              e.currentTarget.style.transform = 'scale(1.02)';
-            }
-          }}
-          onMouseLeave={(e) => {
-            if (!loading && oauthLoading === null) {
-              e.currentTarget.style.opacity = '1';
-              e.currentTarget.style.transform = 'scale(1)';
-            }
-          }}
-        >
-          {oauthLoading === 'google' ? (
-            <>⏳ Cargando...</>
-          ) : (
-            <>
-              <svg width="20" height="20" viewBox="0 0 24 24">
-                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-              </svg>
-              Continuar con Google
-            </>
-          )}
-        </button>
-
-        {/* Botón Facebook */}
-        <button
-          onClick={() => handleOAuthLogin('facebook')}
-          disabled={loading || oauthLoading !== null}
-          style={{
-            width: '100%',
-            padding: '12px 16px',
-            backgroundColor: '#fff',
-            border: '2px solid #FF6835',
-            borderRadius: '8px',
-            fontSize: '0.95rem',
-            fontWeight: '600',
-            color: '#374151',
-            cursor: loading || oauthLoading !== null ? 'not-allowed' : 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '10px',
-            transition: 'opacity 0.2s, transform 0.2s',
-            opacity: loading || oauthLoading !== null ? 0.7 : 1,
-          }}
-          onMouseEnter={(e) => {
-            if (!loading && oauthLoading === null) {
-              e.currentTarget.style.opacity = '0.9';
-              e.currentTarget.style.transform = 'scale(1.02)';
-            }
-          }}
-          onMouseLeave={(e) => {
-            if (!loading && oauthLoading === null) {
-              e.currentTarget.style.opacity = '1';
-              e.currentTarget.style.transform = 'scale(1)';
-            }
-          }}
-        >
-          {oauthLoading === 'facebook' ? (
-            <>⏳ Cargando...</>
-          ) : (
-            <>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="#1877F2">
-                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-              </svg>
-              Continuar con Facebook
-            </>
-          )}
-        </button>
-      </div>
-
-      {/* Separador */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          width: '400px',
-          maxWidth: '90vw',
-          gap: '12px',
-          margin: '8px 0',
-        }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div style={{ flex: 1, height: '1px', backgroundColor: '#ddd' }} />
-        <span style={{ color: '#999', fontSize: '0.85rem' }}>o</span>
-        <div style={{ flex: 1, height: '1px', backgroundColor: '#ddd' }} />
-      </div>
-
-      {/* Campo Email/Celular */}
-      <input
-        type="text"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="Ingrese su mail o celular"
-        disabled={loading}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' && !loading) {
-            handleLogin(e as any);
-          }
-        }}
-        style={{
-          width: '400px',
-          maxWidth: '90vw',
-          padding: '12px 16px',
-          backgroundColor: '#fff',
-          border: '2px solid #FF6835',
-          borderRadius: '8px',
-          fontSize: '1rem',
-          outline: 'none',
-          transition: 'border-color 0.2s',
-          boxSizing: 'border-box',
-          opacity: loading ? 0.7 : 1,
-        }}
-        onClick={(e) => e.stopPropagation()}
-        onFocus={(e) => {
-          e.currentTarget.style.borderColor = '#FF6835';
-        }}
-        onBlur={(e) => {
-          e.currentTarget.style.borderColor = '#FF6835';
-        }}
-      />
-
-      {/* Campo Contraseña */}
-      <div style={{ position: 'relative', width: '400px', maxWidth: '90vw' }} onClick={(e) => e.stopPropagation()}>
-        <input
-          type={showPassword ? 'text' : 'password'}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Ingrese su contraseña"
-          disabled={loading}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && !loading) {
-              handleLogin(e as any);
-            }
-          }}
-          style={{
-            width: '100%',
-            padding: '12px 45px 12px 16px',
-            backgroundColor: '#fff',
-            border: '2px solid #FF6835',
-            borderRadius: '8px',
-            fontSize: '1rem',
-            outline: 'none',
-            transition: 'border-color 0.2s',
-            boxSizing: 'border-box',
-            opacity: loading ? 0.7 : 1,
-          }}
-          onFocus={(e) => {
-            e.currentTarget.style.borderColor = '#FF6835';
-          }}
-          onBlur={(e) => {
-            e.currentTarget.style.borderColor = '#FF6835';
-          }}
-        />
-        <button
-          type="button"
-          onClick={() => setShowPassword(!showPassword)}
-          style={{
-            position: 'absolute',
-            right: '12px',
-            top: '50%',
-            transform: 'translateY(-50%)',
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            padding: '4px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#666',
-          }}
-        >
-          {showPassword ? (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
-              <line x1="1" y1="1" x2="23" y2="23"/>
-            </svg>
-          ) : (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-              <circle cx="12" cy="12" r="3"/>
-            </svg>
-          )}
-        </button>
-      </div>
-
-      {/* Texto Recuperar contraseña */}
-      <span
-        onClick={handleResetPassword}
-        style={{
-          color: '#fff',
-          fontWeight: '700',
-          fontSize: '0.9rem',
-          cursor: resetLoading ? 'wait' : 'pointer',
-          textDecoration: 'none',
-          userSelect: 'none',
-          opacity: resetLoading ? 0.7 : 1,
-          transition: 'opacity 0.2s',
-        }}
-        onMouseEnter={(e) => {
-          if (!resetLoading) {
-            e.currentTarget.style.opacity = '0.8';
-          }
-        }}
-        onMouseLeave={(e) => {
-          if (!resetLoading) {
-            e.currentTarget.style.opacity = '1';
-          }
-        }}
-      >
-        {resetLoading ? 'Enviando...' : 'Recuperar contraseña'}
-      </span>
-
-      {/* Botón Ingresar */}
-      <button
-        onClick={handleLogin}
-        disabled={loading}
-        style={{
-          width: '400px',
-          maxWidth: '90vw',
-          padding: '14px',
-          backgroundColor: loading ? '#ccc' : '#FF6835',
-          color: '#fff',
-          border: 'none',
-          borderRadius: '8px',
-          fontSize: '1rem',
-          fontWeight: '700',
-          cursor: loading ? 'not-allowed' : 'pointer',
-          transition: 'opacity 0.2s, transform 0.2s',
-          opacity: loading ? 0.7 : 1,
-        }}
-        onMouseEnter={(e) => {
-          if (!loading) {
-            e.currentTarget.style.opacity = '0.9';
-            e.currentTarget.style.transform = 'scale(1.02)';
-          }
-        }}
-        onMouseLeave={(e) => {
-          if (!loading) {
-            e.currentTarget.style.opacity = '1';
-            e.currentTarget.style.transform = 'scale(1)';
-          }
-        }}
-      >
-        {loading ? 'Ingresando...' : 'Ingresar'}
+      <button onClick={modo === 'login' ? handleLogin : handleRegistro} disabled={loading} style={btnPrimary}>
+        {loading ? 'Procesando...' : modo === 'login' ? 'Ingresar' : 'Crear cuenta'}
       </button>
     </div>
   );
 }
-
 export default function OddyStorefront() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
