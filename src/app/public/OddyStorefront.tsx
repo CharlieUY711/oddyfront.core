@@ -2572,7 +2572,13 @@ export default function OddyStorefront() {
   const DEPT_COLORS_FINAL = Object.keys(apiDeptColors).length > 0 ? apiDeptColors : DEPT_COLORS;
   
   const [mode,       setMode]       = useState<'mkt' | 'sh'>('mkt');
-  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('login') === 'true';
+    }
+    return false;
+  });
   const [activeDept, setActiveDept] = useState(0);
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [flash,      setFlash]      = useState(false);
@@ -2857,29 +2863,14 @@ export default function OddyStorefront() {
 
           <div className="oddy-header-right">
             <button className="oddy-login-btn" onClick={() => setShowLoginModal(true)}>Ingreso / Registro</button>
-            <div className="oddy-cart" onClick={() => setShowCart(!showCart)} style={{ cursor: 'pointer' }}>
+            <div className="oddy-cart" onClick={() => setShowCart(!showCart)} style={{ cursor: 'pointer', position: 'relative' }}>
               <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <circle cx="9" cy="21" r="1"/>
                 <circle cx="20" cy="21" r="1"/>
                 <path d="M5 1l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6" strokeLinecap="round" strokeLinejoin="round"/>
                 <path d="M5 1L1 1" strokeLinecap="round"/>
-                <text 
-                  x="14" 
-                  y="11.5" 
-                  fontSize="9" 
-                  fill="#FF6835" 
-                  fontWeight="normal"
-                  textAnchor="middle"
-                  dominantBaseline="middle"
-                  style={{ 
-                    fontFamily: 'Times New Roman, serif', 
-                    fontWeight: 'normal',
-                    pointerEvents: 'none'
-                  }}
-                >
-                  0
-                </text>
               </svg>
+              {cartItems.length > 0 && <span style={{ position: 'absolute', top: '-6px', right: '-6px', fontSize: '10px', color: isSH ? '#6BB87A' : '#FF6835', fontFamily: "'Arial', sans-serif", fontWeight: 'normal', lineHeight: 1, zIndex: 10 }}>{cartItems.length}</span>}
             </div>
           </div>
         </div>
