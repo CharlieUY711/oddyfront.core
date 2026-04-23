@@ -1,22 +1,38 @@
-import { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router';
-import { supabase } from '../../utils/supabase/client';
+import { useEffect, useState, useRef } from "react";
+import { useNavigate, useLocation } from "react-router";
+import { supabase } from "../../utils/supabase/client";
 
 export function useRequireAuth() {
   const navigate = useNavigate();
   const location = useLocation();
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
+  const redirected = useRef(false);
 
   useEffect(() => {
+    // Check initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) {
-        navigate('/?login=true&redirect=' + encodeURIComponent(location.pathname));
+      if (!session && !redirected.current) {
+        redirected.current = true;
+        navigate("/?login=true&redirect=" + encodeURIComponent(location.pathname), { replace: true });
       } else {
-        setUser(session.user);
+        setUser(session?.user ?? null);
+        setLoading(false);
       }
-      setLoading(false);
     });
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session && !redirected.current) {
+        redirected.current = true;
+        navigate("/?login=true&redirect=" + encodeURIComponent(location.pathname), { replace: true });
+      } else {
+        setUser(session?.user ?? null);
+        setLoading(false);
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   return { loading, user };
