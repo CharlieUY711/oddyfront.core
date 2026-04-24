@@ -30,7 +30,7 @@ function UserAvatar({ user, isAdmin }: { user: any; isAdmin: boolean }) {
   return (
     <div style={{ padding:"0.75rem 1.5rem 1rem", borderBottom:"1px solid rgba(255,255,255,0.08)", display:"flex", alignItems:"center", gap:"0.75rem" }}>
       <div onClick={() => inputRef.current?.click()}
-        style={{ width:"40px", height:"40px", borderRadius:"50%", flexShrink:0, cursor:"pointer", overflow:"hidden", border:`2px solid ${isAdmin ? "#FF7A00" : "#6BB87A"}`, position:"relative", background:"rgba(255,255,255,0.08)" }}
+        style={{ width:"240px", height:"40px", borderRadius:"50%", flexShrink:0, cursor:"pointer", overflow:"hidden", border:`2px solid ${isAdmin ? "#FF7A00" : "#6BB87A"}`, position:"relative", background:"rgba(255,255,255,0.08)" }}
         title="Cambiar foto">
         {avatar
           ? <img src={avatar} alt="avatar" style={{ width:"100%", height:"100%", objectFit:"cover" }} />
@@ -162,7 +162,7 @@ export default function AdminLayout() {
       <div style={{ flex:1, display:"flex", flexDirection:"column", minWidth:0 }}>
 
         {/* Topbar */}
-        <header style={{ background: SIDEBAR_BG, padding:"0 2rem", height:"56px", display:"flex", alignItems:"center", justifyContent:"space-between", position:"sticky", top:0, zIndex:10 }}>
+        <header style={{ background: SIDEBAR_BG, padding:"0 2rem", height:"80px", display:"flex", alignItems:"center", justifyContent:"space-between", position:"sticky", top:0, zIndex:10 }}>
           <h1 style={{ margin:0, fontSize:"0.95rem", fontWeight:700, color:"rgba(255,255,255,0.9)" }}>
             {[...commonMenu, ...adminMenu].find(m => isActive(m.path, m.exact))?.label?.split(" ").slice(1).join(" ") || "Dashboard"}
           </h1>
