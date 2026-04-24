@@ -53,7 +53,7 @@ function UserAvatar({ user, isAdmin }: { user: any; isAdmin: boolean }) {
       <div style={{ minWidth:0 }}>
         <div style={{ color:"rgba(255,255,255,0.9)", fontSize:"0.75rem", fontWeight:600,
           overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", maxWidth:"140px" }}>
-          {user?.email}
+          {user?.user_metadata?.nombre || user?.email?.split("@")[0] || "Usuario"}
         </div>
         <div style={{ color: isAdmin ? "#FF7A00" : "#6BB87A", fontSize:"0.68rem", fontWeight:700, marginTop:"2px" }}>
           {isAdmin ? "Administrador" : "Usuario"}
