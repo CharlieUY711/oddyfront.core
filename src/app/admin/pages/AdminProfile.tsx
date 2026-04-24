@@ -11,6 +11,8 @@ interface Address {
   street:    string;
   city:      string;
   zip:       string;
+  lat?:      number;
+  lng?:      number;
   isDefault: boolean;
 }
 
@@ -197,12 +199,12 @@ function PersonalTab({ profile, email, onChange }: { profile: ProfileData; email
 function AddressesTab({ addresses, onChange }: { addresses: Address[]; onChange: (a: Address[]) => void }) {
   const [adding,  setAdding]  = useState(false);
   const [editId,  setEditId]  = useState<string|null>(null);
-  const [form,    setForm]    = useState({ label:"Casa", street:"", city:"", zip:"" });
+  const [form,    setForm]    = useState({ label:"Casa", street:"", city:"", zip:"", lat:0, lng:0 });
   const [delId,   setDelId]   = useState<string|null>(null);
 
   const handleAdd = () => {
     if (!form.street) return;
-    const newAddr: Address = { id: Date.now().toString(), ...form, isDefault: addresses.length === 0 };
+    const newAddr: Address = { id: Date.now().toString(), label: form.label, street: form.street, city: form.city, zip: form.zip, lat: form.lat, lng: form.lng, isDefault: addresses.length === 0 };
     onChange([...addresses, newAddr]);
     setForm({ label:"Casa", street:"", city:"", zip:"" }); setAdding(false);
   };
@@ -237,7 +239,15 @@ function AddressesTab({ addresses, onChange }: { addresses: Address[]; onChange:
                 {["Casa","Trabajo","Otro"].map(l=><option key={l}>{l}</option>)}
               </select>
             </div>
-            <InputField label="Calle y número" value={form.street} onChange={v=>setForm(p=>({...p,street:v}))} placeholder="Ej: Av. 18 de Julio 1234" />
+            <div>
+              <label style={{ fontSize:"0.75rem", fontWeight:600, color:"#6B7280", display:"block", marginBottom:"4px" }}>Calle y número</label>
+              <AddressAutocomplete
+                value={form.street}
+                onChange={v => setForm(p=>({...p, street:v}))}
+                onSelect={({address, lat, lng}) => setForm(p=>({...p, street:address, lat, lng}))}
+                placeholder="Ej: Av. 18 de Julio 1234"
+              />
+            </div>
             <InputField label="Ciudad" value={form.city} onChange={v=>setForm(p=>({...p,city:v}))} placeholder="Ej: Montevideo" />
             <InputField label="Código postal" value={form.zip} onChange={v=>setForm(p=>({...p,zip:v}))} placeholder="Ej: 11300" />
           </div>
