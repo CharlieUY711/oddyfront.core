@@ -31,10 +31,7 @@ export default function AdminOrders() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <button onClick={() => refetch()} style={{ padding: "0.5rem 1rem", background: "#fff", border: "1px solid #E5E7EB", borderRadius: "8px", cursor: "pointer", fontSize: "0.85rem" }}>
-          🔄 Actualizar
-        </button>
-      </div>
+                </div>
 
       {/* Filtros */}
       <div style={{ background: "#fff", borderRadius: "12px", padding: "1rem 1.5rem", display: "flex", gap: "1rem", flexWrap: "wrap", alignItems: "flex-end" }}>

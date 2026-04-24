@@ -57,10 +57,7 @@ export default function AdminProducts() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <button onClick={() => refetch()} style={{ padding: "0.5rem 1rem", background: "#fff", border: "1px solid #E5E7EB", borderRadius: "8px", cursor: "pointer", fontSize: "0.85rem", color: "#555" }}>
-          🔄 Actualizar
-        </button>
-      </div>
+                </div>
 
       {actionError && (
         <div style={{ background: "#fef2f2", border: "1px solid #ef4444", borderRadius: "8px", padding: "0.75rem 1rem", color: "#dc2626", fontSize: "0.85rem", display: "flex", justifyContent: "space-between" }}>

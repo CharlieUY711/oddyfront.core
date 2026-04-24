@@ -172,6 +172,11 @@ export default function AdminLayout() {
           <h1 style={{ margin:0, fontSize:"1.25rem", fontWeight:700, color:"rgba(255,255,255,0.9)" }}>
             {[...commonMenu, ...adminMenu].find(m => isActive(m.path, m.exact))?.label?.split(" ").slice(1).join(" ") || "Dashboard"}
           </h1>
+          <button onClick={() => window.location.reload()}
+            title="Actualizar"
+            style={{ background:"transparent", border:`1px solid rgba(255,255,255,0.3)`, color:"rgba(255,255,255,0.7)", width:"34px", height:"34px", borderRadius:"50%", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", fontSize:"1rem", transition:"all 0.15s" }}>
+            ↻
+          </button>
           <Link to="/" style={{ color: ACCENT, textDecoration:"none", fontSize:"0.82rem", fontWeight:600, padding:"0.35rem 0.9rem", border:`1px solid ${ACCENT}`, borderRadius:"6px", transition:"all 0.15s" }}>
             Ver tienda
           </Link>
