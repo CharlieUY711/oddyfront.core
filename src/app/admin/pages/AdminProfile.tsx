@@ -22,7 +22,6 @@ export default function AdminProfile() {
 
   return (
     <div style={{ maxWidth:"560px", display:"flex", flexDirection:"column", gap:"1rem" }}>
-      <h2 style={{ margin:0, fontSize:"1.25rem", fontWeight:700 }}>Mi perfil</h2>
       <div style={{ background:"#fff", borderRadius:"12px", padding:"1.5rem", display:"flex", flexDirection:"column", gap:"1rem" }}>
         <div>
           <label style={{ display:"block", fontSize:"0.85rem", fontWeight:600, color:"#444", marginBottom:"0.25rem" }}>Email</label>

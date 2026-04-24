@@ -24,7 +24,6 @@ export default function AdminCatalog() {
   return (
     <div style={{ display:"flex", flexDirection:"column", gap:"1.25rem" }}>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-        <h2 style={{ margin:0, fontSize:"1.25rem", fontWeight:700 }}>Catálogo</h2>
         <button onClick={refetchAll} style={{ padding:"0.4rem 0.9rem", background:"#fff", border:"1px solid #E5E7EB", borderRadius:"8px", cursor:"pointer", fontSize:"0.8rem" }}>🔄</button>
       </div>
 

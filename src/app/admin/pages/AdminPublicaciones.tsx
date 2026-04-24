@@ -69,7 +69,6 @@ export default function AdminPublicaciones() {
   return (
     <div style={{ display:"flex", flexDirection:"column", gap:"1rem" }}>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-        <h2 style={{ margin:0, fontSize:"1.25rem", fontWeight:700 }}>♻️ Mis publicaciones Second Hand</h2>
         <button onClick={()=>setShowForm(!showForm)}
           style={{ padding:"0.5rem 1.1rem", background:"#6BB87A", color:"#fff", border:"none", borderRadius:"8px", cursor:"pointer", fontWeight:700 }}>
           {showForm?"Cancelar":"+ Nueva publicación"}

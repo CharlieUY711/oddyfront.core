@@ -169,7 +169,7 @@ export default function AdminLayout() {
 
         {/* Topbar */}
         <header style={{ background: SIDEBAR_BG, padding:"0 2rem", height:"70px", display:"flex", alignItems:"center", justifyContent:"space-between", position:"sticky", top:0, zIndex:10 }}>
-          <h1 style={{ margin:0, fontSize:"0.95rem", fontWeight:700, color:"rgba(255,255,255,0.9)" }}>
+          <h1 style={{ margin:0, fontSize:"1.15rem", fontWeight:700, color:"rgba(255,255,255,0.9)" }}>
             {[...commonMenu, ...adminMenu].find(m => isActive(m.path, m.exact))?.label?.split(" ").slice(1).join(" ") || "Dashboard"}
           </h1>
           <Link to="/" style={{ color: ACCENT, textDecoration:"none", fontSize:"0.82rem", fontWeight:600, padding:"0.35rem 0.9rem", border:`1px solid ${ACCENT}`, borderRadius:"6px", transition:"all 0.15s" }}>
