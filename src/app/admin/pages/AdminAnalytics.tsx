@@ -76,8 +76,7 @@ export default function AdminAnalytics() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-      <h2 style={{ margin: 0, fontSize: "1.25rem", fontWeight: 700 }}>Analytics</h2>
-
+      
       {/* KPIs */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "1rem" }}>
         {[

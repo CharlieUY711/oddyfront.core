@@ -57,10 +57,7 @@ export default function AdminProducts() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h2 style={{ margin: 0, fontSize: "1.25rem", fontWeight: 700 }}>
-          Productos <span style={{ color: "#888", fontWeight: 400, fontSize: "1rem" }}>({products.length})</span>
-        </h2>
-        <button onClick={() => refetch()} style={{ padding: "0.5rem 1rem", background: "#fff", border: "1px solid #E5E7EB", borderRadius: "8px", cursor: "pointer", fontSize: "0.85rem", color: "#555" }}>
+                <button onClick={() => refetch()} style={{ padding: "0.5rem 1rem", background: "#fff", border: "1px solid #E5E7EB", borderRadius: "8px", cursor: "pointer", fontSize: "0.85rem", color: "#555" }}>
           🔄 Actualizar
         </button>
       </div>
