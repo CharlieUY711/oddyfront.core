@@ -26,3 +26,19 @@ export function toSlug(name: string): string {
   return name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 }
+
+export const NODE_ICONS: Record<string, string> = {
+  department:  "🏢",
+  category:    "📂",
+  subcategory: "📁",
+  node:        "📌",
+  product:     "📦",
+};
+
+export const NODE_LABELS: Record<string, string> = {
+  department:  "Departamento",
+  category:    "Categoría",
+  subcategory: "Subcategoría",
+  node:        "Nodo",
+  product:     "Producto",
+};
