@@ -102,7 +102,7 @@ export default function AdminLayout() {
       <aside style={{ width:"220px", background: SIDEBAR_BG, display:"flex", flexDirection:"column", position:"sticky", top:0, height:"100vh", flexShrink:0 }}>
 
         {/* Logo */}
-        <div style={{ padding:"0 1.5rem", height:"80px", display:"flex", alignItems:"center" }}>
+        <div style={{ padding:"0 1.5rem", height:"70px", display:"flex", alignItems:"center" }}>
           <Link to="/" style={{ textDecoration:"none", display:"flex", alignItems:"center" }}>
             <div style={{ color: ACCENT, fontWeight:900, fontSize:"1.75rem", letterSpacing:"-0.03em", lineHeight:1 }}>
               ODDY Panel
@@ -168,7 +168,7 @@ export default function AdminLayout() {
       <div style={{ flex:1, display:"flex", flexDirection:"column", minWidth:0 }}>
 
         {/* Topbar */}
-        <header style={{ background: SIDEBAR_BG, padding:"0 2rem", height:"80px", display:"flex", alignItems:"center", justifyContent:"space-between", position:"sticky", top:0, zIndex:10 }}>
+        <header style={{ background: SIDEBAR_BG, padding:"0 2rem", height:"70px", display:"flex", alignItems:"center", justifyContent:"space-between", position:"sticky", top:0, zIndex:10 }}>
           <h1 style={{ margin:0, fontSize:"0.95rem", fontWeight:700, color:"rgba(255,255,255,0.9)" }}>
             {[...commonMenu, ...adminMenu].find(m => isActive(m.path, m.exact))?.label?.split(" ").slice(1).join(" ") || "Dashboard"}
           </h1>
