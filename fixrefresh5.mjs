@@ -17,7 +17,7 @@ c = c.replace(
           <Link to="/" style={{ color: ACCENT, textDecoration:"none", fontSize:"0.82rem", fontWeight:600, padding:"0.35rem 0.9rem", border:\`1px solid \${ACCENT}\`, borderRadius:"6px", transition:"all 0.15s" }}>
             Ver tienda
           </Link>`,
-  `          <div style={{ display:"flex", alignItems:"center", gap:"0.75rem" }}>
+  `          <div style={{ display:"flex", alignItems:"rigth", gap:"0.75rem" }}>
             <button onClick={() => window.location.reload()}
               title="Actualizar"
               style={{ background:"transparent", border:"none", color:"rgba(255,255,255,0.7)", cursor:"pointer", fontSize:"1.5rem", lineHeight:1, padding:"0", transition:"color 0.15s" }}
