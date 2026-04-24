@@ -1,4 +1,8 @@
-import { useState, useEffect, useCallback } from "react";
+import { readFileSync, writeFileSync } from 'fs';
+const file = 'src/app/admin/hooks/useAdminOrders.ts';
+let c = readFileSync(file, 'utf8');
+
+c = `import { useState, useEffect, useCallback } from "react";
 import { supabase } from "../../../utils/supabase/client";
 
 export function useAdminOrders(limit = 50, isAdmin = false) {
@@ -27,3 +31,7 @@ export function useAdminOrders(limit = 50, isAdmin = false) {
   useEffect(() => { refetch(); }, [refetch]);
   return { orders, loading, error, refetch };
 }
+`;
+
+writeFileSync(file, c, 'utf8');
+console.log('OK');

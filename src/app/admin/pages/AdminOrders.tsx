@@ -1,8 +1,10 @@
 import { useState, useMemo } from "react";
 import { useAdminOrders } from "../hooks/useAdminOrders";
+import { useOutletContext } from "react-router";
 
 export default function AdminOrders() {
-  const { orders, loading, error, refetch } = useAdminOrders(200);
+  const { isAdmin } = useOutletContext<any>() || {};
+  const { orders, loading, error, refetch } = useAdminOrders(200, isAdmin);
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterFrom,   setFilterFrom]   = useState("");
   const [filterTo,     setFilterTo]     = useState("");

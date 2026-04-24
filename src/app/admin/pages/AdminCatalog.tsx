@@ -1,10 +1,12 @@
 import { useState, useCallback } from "react";
+import { useOutletContext } from "react-router";
 import { useDepartments, useCategories, useSubcategories } from "../hooks/useCatalog";
 import { catalogService, toSlug } from "../services/catalogService";
 
 type Tab = "tree" | "departments" | "categories" | "subcategories";
 
 export default function AdminCatalog() {
+  const { isAdmin } = useOutletContext<any>() || {};
   const [tab, setTab] = useState<Tab>("tree");
   const [toast, setToast] = useState<{text:string;type:"ok"|"err"}|null>(null);
 
