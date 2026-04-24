@@ -28,84 +28,9 @@ function UserAvatar({ user, isAdmin }: { user: any; isAdmin: boolean }) {
   };
 
   return (
-    <div style={{ padding:"1rem 1.5rem", borderBottom:"1px solid rgba(255,255,255,0.08)", display:"flex", alignItems:"center", gap:"0.75rem" }}>
-      {/* Círculo avatar */}
-      <div style={{ position:"relative", flexShrink:0 }}>
-        <div onClick={() => inputRef.current?.click()}
-          style={{ width:"44px", height:"44px", borderRadius:"50%", cursor:"pointer", overflow:"hidden",
-            border:`2px solid ${isAdmin ? "#FF7A00" : "#6BB87A"}`,
-            background:"rgba(255,255,255,0.1)", display:"flex", alignItems:"center", justifyContent:"center" }}>
-          {avatar
-            ? <img src={avatar} alt="avatar" style={{ width:"100%", height:"100%", objectFit:"cover" }} />
-            : <span style={{ fontSize:"1.25rem" }}>{isAdmin ? "👑" : "👤"}</span>
-          }
-        </div>
-        {/* Botón editar */}
-        <div onClick={() => inputRef.current?.click()}
-          style={{ position:"absolute", bottom:"-2px", right:"-2px", width:"18px", height:"18px", borderRadius:"50%",
-            background:"#FF7A00", display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer",
-            fontSize:"0.6rem", border:"2px solid #0A2540" }}>
-          ✏️
-        </div>
-      </div>
-      <input ref={inputRef} type="file" accept="image/*" onChange={handleFile} style={{ display:"none" }} />
-      {/* Info */}
-      <div style={{ minWidth:0 }}>
-        <div style={{ color:"rgba(255,255,255,0.9)", fontSize:"0.75rem", fontWeight:600,
-          overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", maxWidth:"140px" }}>
-          {user?.user_metadata?.nombre || user?.email?.split("@")[0] || "Usuario"}
-        </div>
-        <div style={{ color: isAdmin ? "#FF7A00" : "#6BB87A", fontSize:"0.68rem", fontWeight:700, marginTop:"2px" }}>
-          {isAdmin ? "Administrador" : "Usuario"}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export default function AdminLayout() {
-  const navigate  = useNavigate();
-  const location  = useLocation();
-  const { user, isAdmin, loading } = useUserRole();
-
-  useEffect(() => {
-    if (!loading && !user) navigate("/?login=true&redirect=/admin");
-  }, [loading, user]);
-
-  const commonMenu = [
-    { path: "/admin",              label: "📊 Dashboard",          exact: true  },
-    { path: "/admin/orders",       label: "🛍 Mis órdenes"                      },
-    { path: "/admin/publicaciones",label: "♻️ Mis publicaciones"                },
-    { path: "/admin/profile",      label: "👤 Mi perfil"                        },
-  ];
-
-  const adminMenu = [
-    { path: "/admin/products",     label: "📦 Productos"           },
-    { path: "/admin/catalog",      label: "📋 Catálogo"            },
-    { path: "/admin/analytics",    label: "📈 Analytics"           },
-    { path: "/admin/ml",           label: "🟡 MercadoLibre"        },
-  ];
-
-  const isActive = (path: string, exact?: boolean) =>
-    exact ? location.pathname === path : location.pathname.startsWith(path);
-
-  if (loading) return (
-    <div style={{ minHeight:"100vh", display:"flex", alignItems:"center", justifyContent:"center", background: SIDEBAR_BG }}>
-      <div style={{ color: ACCENT, fontSize:"1.1rem" }}>Cargando...</div>
-    </div>
-  );
-
-  return (
-    <div style={{ display:"flex", minHeight:"100vh", fontFamily:"DM Sans, sans-serif", background:"#F4F5F7" }}>
-
-      {/* ── Sidebar ── */}
-      <aside style={{ width:"220px", background: SIDEBAR_BG, display:"flex", flexDirection:"column", position:"sticky", top:0, height:"100vh", flexShrink:0 }}>
-
-        {/* Logo */}
-        <div style={{ padding:"0 1.5rem", height:"70px", display:"flex", alignItems:"center" }}>
-          <Link to="/" style={{ textDecoration:"none", display:"flex", alignItems:"center" }}>
-            <div style={{ color: ACCENT, fontWeight:900, fontSize:"1.75rem", letterSpacing:"-0.03em", lineHeight:1 }}>
-              ODDY Panel
+    <div style={{ lineHeight:1 }}>
+              <span style={{ color: ACCENT, fontWeight:900, fontSize:"1.75rem", letterSpacing:"-0.03em" }}>ODDY</span>
+              <span style={{ color:"#fff", fontWeight:400, fontSize:"1.75rem", letterSpacing:"-0.03em" }}> Panel</span>
             </div>
           </Link>
         </div>
