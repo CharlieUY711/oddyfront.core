@@ -1,5 +1,4 @@
 import { createBrowserRouter, type RouteObject } from "react-router";
-<<<<<<< HEAD
 import OddyStorefront          from "./public/OddyStorefront";
 import CarritoPage             from "./public/CarritoPage";
 import CheckoutPage            from "./public/CheckoutPage";
@@ -18,26 +17,6 @@ import AdminML                 from "./admin/pages/AdminML";
 import AdminCatalog            from "./admin/pages/AdminCatalog";
 import AdminProfile            from "./admin/pages/AdminProfile";
 import AdminPublicaciones      from "./admin/pages/AdminPublicaciones";
-=======
-import OddyStorefront         from "./public/OddyStorefront";
-import CarritoPage            from "./public/CarritoPage";
-import CheckoutPage           from "./public/CheckoutPage";
-import OrdenPage              from "./public/OrdenPage";
-import MensajePage            from "./public/MensajePage";
-import SuccessPage            from "./public/SuccessPage";
-import FailurePage            from "./public/FailurePage";
-import PendingPage            from "./public/PendingPage";
-import DashboardLayout        from "./public/DashboardLayout";
-import DashboardOrdenes       from "./public/DashboardOrdenes";
-import DashboardPublicaciones from "./public/DashboardPublicaciones";
-import DashboardPerfil        from "./public/DashboardPerfil";
-import AdminLayout            from "./admin/components/AdminLayout";
-import AdminDashboard         from "./admin/pages/AdminDashboard";
-import AdminProducts          from "./admin/pages/AdminProducts";
-import AdminOrders            from "./admin/pages/AdminOrders";
-import AdminAnalytics         from "./admin/pages/AdminAnalytics";
-import AdminML                from "./admin/pages/AdminML";
->>>>>>> parent of fbf8f64b (feat: AdminCatalog - departments/categories/subcategories CRUD, hooks, catalogService, RPCs)
 
 export const TODAS_LAS_RUTAS: (RouteObject & { id: string })[] = [
   { id: "storefront",          path: "/",           Component: OddyStorefront },
@@ -54,7 +33,6 @@ export const TODAS_LAS_RUTAS: (RouteObject & { id: string })[] = [
   {
     id: "admin", path: "/admin", Component: AdminLayout,
     children: [
-<<<<<<< HEAD
       { id: "admin-dashboard",      path: "",              Component: AdminDashboard },
       { id: "admin-orders",         path: "orders",        Component: AdminOrders },
       { id: "admin-publicaciones",  path: "publicaciones", Component: AdminPublicaciones },
@@ -63,13 +41,6 @@ export const TODAS_LAS_RUTAS: (RouteObject & { id: string })[] = [
       { id: "admin-catalog",        path: "catalog",       Component: AdminCatalog },
       { id: "admin-analytics",      path: "analytics",     Component: AdminAnalytics },
       { id: "admin-ml",             path: "ml",            Component: AdminML },
-=======
-      { id: "admin-dashboard",  path: "",           Component: AdminDashboard },
-      { id: "admin-products",   path: "products",   Component: AdminProducts },
-      { id: "admin-orders",     path: "orders",     Component: AdminOrders },
-      { id: "admin-analytics",  path: "analytics",  Component: AdminAnalytics },
-      { id: "admin-ml",         path: "ml",         Component: AdminML },
->>>>>>> parent of fbf8f64b (feat: AdminCatalog - departments/categories/subcategories CRUD, hooks, catalogService, RPCs)
     ] as RouteObject[],
   },
 ];
