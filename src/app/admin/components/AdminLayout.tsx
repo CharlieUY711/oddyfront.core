@@ -40,12 +40,12 @@ function UserAvatar({ user, isAdmin }: { user: any; isAdmin: boolean }) {
             : <span style={{ fontSize:"1.25rem" }}>{isAdmin ? "👑" : "👤"}</span>
           }
         </div>
-        {/* Botón cámara */}
+        {/* Botón editar */}
         <div onClick={() => inputRef.current?.click()}
           style={{ position:"absolute", bottom:"-2px", right:"-2px", width:"18px", height:"18px", borderRadius:"50%",
             background:"#FF7A00", display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer",
             fontSize:"0.6rem", border:"2px solid #0A2540" }}>
-          📷
+          ✏️
         </div>
       </div>
       <input ref={inputRef} type="file" accept="image/*" onChange={handleFile} style={{ display:"none" }} />
