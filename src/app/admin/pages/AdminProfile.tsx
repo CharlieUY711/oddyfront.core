@@ -3,7 +3,6 @@ import { supabase } from "../../../utils/supabase/client";
 import AddressAutocomplete from "../../components/maps/AddressAutocomplete";
 import AddressCard from "../../components/profile/AddressCard";
 import { useOutletContext } from "react-router";
-import { supabase } from "../../../utils/supabase/client";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 interface Address {
