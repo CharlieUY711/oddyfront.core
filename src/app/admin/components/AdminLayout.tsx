@@ -179,6 +179,12 @@ export default function AdminLayout() {
             onMouseLeave={e=>(e.currentTarget.style.color="rgba(255,255,255,0.7)")}>
             ↻
           </button>
+          <button onClick={() => window.location.reload()} title="Actualizar"
+            style={{ background:"transparent", border:"none", color:"rgba(255,255,255,0.7)", cursor:"pointer", fontSize:"1.4rem", lineHeight:1, padding:"0 0.5rem", transition:"color 0.15s" }}
+            onMouseEnter={e=>(e.currentTarget.style.color="#fff")}
+            onMouseLeave={e=>(e.currentTarget.style.color="rgba(255,255,255,0.7)")}>
+            ↻
+          </button>
           <Link to="/" style={{ color: ACCENT, textDecoration:"none", fontSize:"0.82rem", fontWeight:600, padding:"0.35rem 0.9rem", border:`1px solid ${ACCENT}`, borderRadius:"6px", transition:"all 0.15s" }}>
             Ver tienda
           </Link>
