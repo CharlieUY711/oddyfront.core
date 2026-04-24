@@ -174,7 +174,9 @@ export default function AdminLayout() {
           </h1>
           <button onClick={() => window.location.reload()}
             title="Actualizar"
-            style={{ background:"transparent", border:`1px solid rgba(255,255,255,0.3)`, color:"rgba(255,255,255,0.7)", width:"34px", height:"34px", borderRadius:"50%", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", fontSize:"1rem", transition:"all 0.15s" }}>
+            style={{ background:"transparent", border:"none", color:"rgba(255,255,255,0.7)", cursor:"pointer", fontSize:"1.5rem", lineHeight:1, padding:"0 0.25rem", transition:"color 0.15s" }}
+            onMouseEnter={e=>(e.currentTarget.style.color="#fff")}
+            onMouseLeave={e=>(e.currentTarget.style.color="rgba(255,255,255,0.7)")}>
             ↻
           </button>
           <Link to="/" style={{ color: ACCENT, textDecoration:"none", fontSize:"0.82rem", fontWeight:600, padding:"0.35rem 0.9rem", border:`1px solid ${ACCENT}`, borderRadius:"6px", transition:"all 0.15s" }}>
