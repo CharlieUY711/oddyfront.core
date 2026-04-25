@@ -1,41 +1,53 @@
 import { useEffect, useRef } from "react";
-declare global { interface Window { google: any } }
 
 interface Props { lat: number; lng: number; zoom?: number; height?: string; }
 
 export default function AddressMap({ lat, lng, zoom=15, height="160px" }: Props) {
-  const mapRef    = useRef<HTMLDivElement>(null);
-  const mapObj    = useRef<any>(null);
-  const markerObj = useRef<any>(null);
+  const mapRef      = useRef<HTMLDivElement>(null);
+  const mapInstance = useRef<any>(null);
+  const markerRef   = useRef<any>(null);
+  const initRef     = useRef(false);
 
   useEffect(() => {
-    const init = () => {
-      if (!mapRef.current) return;
-      mapObj.current = new window.google.maps.Map(mapRef.current, {
-        center: { lat, lng }, zoom, disableDefaultUI: true,
-        styles: [
-          { elementType:"geometry", stylers:[{ color:"#f5f5f5" }] },
-          { featureType:"road", elementType:"geometry", stylers:[{ color:"#ffffff" }] },
-          { featureType:"water", elementType:"geometry", stylers:[{ color:"#c9c9c9" }] },
-          { featureType:"poi", stylers:[{ visibility:"off" }] },
-        ],
+    if (initRef.current || !mapRef.current || !lat || !lng) return;
+    initRef.current = true;
+
+    import("leaflet").then(L => {
+      // Fix Leaflet icons
+      delete (L.Icon.Default.prototype as any)._getIconUrl;
+      L.Icon.Default.mergeOptions({
+        iconUrl:       "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+        iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+        shadowUrl:     "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
       });
-      markerObj.current = new window.google.maps.Marker({
-        position: { lat, lng }, map: mapObj.current,
-        icon: { path: window.google.maps.SymbolPath.CIRCLE, scale:10,
-          fillColor:"#FF7A00", fillOpacity:1, strokeColor:"#fff", strokeWeight:2 },
+
+      mapInstance.current = L.map(mapRef.current!, { zoomControl:false, attributionControl:false }).setView([lat, lng], zoom);
+
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "© OpenStreetMap"
+      }).addTo(mapInstance.current);
+
+      const icon = L.divIcon({
+        html:`<div style="width:20px;height:20px;background:#FF7A00;border:3px solid #fff;border-radius:50%;box-shadow:0 2px 8px rgba(255,122,0,0.5)"></div>`,
+        className:"", iconSize:[20,20], iconAnchor:[10,10],
       });
-    };
-    if (window.google?.maps) init();
-    else { const t = setInterval(() => { if(window.google?.maps){clearInterval(t);init();} }, 200); return ()=>clearInterval(t); }
+
+      markerRef.current = L.marker([lat, lng], { icon }).addTo(mapInstance.current);
+    });
+
+    return () => { mapInstance.current?.remove(); initRef.current = false; };
   }, []);
 
   useEffect(() => {
-    if (!mapObj.current || !markerObj.current) return;
-    const pos = { lat, lng };
-    mapObj.current.panTo(pos);
-    markerObj.current.setPosition(pos);
+    if (!mapInstance.current || !lat || !lng) return;
+    mapInstance.current.setView([lat, lng], zoom);
+    markerRef.current?.setLatLng([lat, lng]);
   }, [lat, lng]);
 
-  return <div ref={mapRef} style={{ width:"100%", height, borderRadius:"8px", background:"#f0f0f0" }} />;
+  return (
+    <>
+      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+      <div ref={mapRef} style={{ width:"100%", height, borderRadius:"8px", overflow:"hidden", background:"#f0f0f0" }} />
+    </>
+  );
 }
