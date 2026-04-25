@@ -7,16 +7,18 @@ import { useOutletContext } from "react-router";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 interface Address {
-  id:         string;
-  label:      string;
-  street:     string;
-  doorNumber?: string;
-  corner?:    string;
-  city:       string;
-  zip:        string;
-  lat?:       number;
-  lng?:       number;
-  isDefault:  boolean;
+  id:           string;
+  label:        string;
+  street:       string;
+  doorNumber?:  string;
+  corner?:      string;
+  apartment?:   string;
+  indicaciones?: string;
+  city:         string;
+  zip:          string;
+  lat?:         number;
+  lng?:         number;
+  isDefault:    boolean;
 }
 
 interface Contact {
@@ -209,7 +211,7 @@ function AddressesTab({ addresses, onChange }: { addresses: Address[]; onChange:
     if (!form.street) return;
     const newAddr: Address = { id: Date.now().toString(), label: form.label, street: form.street, city: form.city, zip: form.zip, lat: form.lat, lng: form.lng, isDefault: addresses.length === 0 };
     onChange([...addresses, newAddr]);
-    setForm({ label:"Casa", street:"", doorNumber:"", corner:"", city:"", zip:"", lat:0, lng:0 }); setAdding(false);
+    setForm({ label:"Casa", street:"", doorNumber:"", corner:"", apartment:"", indicaciones:"", city:"", zip:"", lat:0, lng:0 }); setAdding(false);
   };
 
   const handleEdit = () => {
@@ -236,7 +238,7 @@ function AddressesTab({ addresses, onChange }: { addresses: Address[]; onChange:
           form={form}
           setForm={setForm}
           editId={editId}
-          onCancel={() => { setAdding(false); setEditId(null); setForm({ label:"Casa", street:"", doorNumber:"", corner:"", city:"", zip:"", lat:0, lng:0 }); }}
+          onCancel={() => { setAdding(false); setEditId(null); setForm({ label:"Casa", street:"", doorNumber:"", corner:"", apartment:"", indicaciones:"", city:"", zip:"", lat:0, lng:0 }); }}
           onSubmit={editId ? handleEdit : handleAdd}
         />
       )}
@@ -497,12 +499,52 @@ function AddressForm({ form, setForm, editId, onCancel, onSubmit }: any) {
                 style={{ width:"100%", padding:"0.6rem 0.75rem", border:"1.5px solid #E5E7EB", borderRadius:"8px",
                   fontSize:"0.875rem", outline:"none", boxSizing:"border-box" }}
                 onFocus={e=>e.target.style.borderColor="#FF7A00"}
-                onBlur={e=>e.target.style.borderColor="#E5E7EB"} />
+                onBlur={async e => {
+                  e.target.style.borderColor="#E5E7EB";
+                  const num = e.target.value.trim();
+                  if (!num || !form.street) return;
+                  // Extraer nombre de calle base (sin numero anterior)
+                  const streetBase = form.street.split(",")[0].replace(/\d+/g,"").trim();
+                  const query = encodeURIComponent(`${streetBase} ${num}, ${form.city || "Montevideo"}`);
+                  try {
+                    const res = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${query}.json?access_token=${import.meta.env.VITE_MAPBOX_TOKEN}&language=es&limit=1&types=address`);
+                    const data = await res.json();
+                    const feat = data.features?.[0];
+                    if (feat) {
+                      const [lng, lat] = feat.center;
+                      const parts = feat.place_name.split(",");
+                      const city = parts.length > 1 ? parts[parts.length-3]?.trim() || "" : "";
+                      setForm((p:any) => ({...p, street: feat.place_name, lat, lng, city}));
+                    }
+                  } catch {}
+                }} />
             </div>
             <div>
               <label style={{ fontSize:"0.75rem", fontWeight:600, color:"#6B7280", display:"block", marginBottom:"4px" }}>Esquina / entre calles</label>
               <input value={form.corner} onChange={e=>setForm((p:any)=>({...p,corner:e.target.value}))}
                 placeholder="Ej: Entre Ejido y Andes"
+                style={{ width:"100%", padding:"0.6rem 0.75rem", border:"1.5px solid #E5E7EB", borderRadius:"8px",
+                  fontSize:"0.875rem", outline:"none", boxSizing:"border-box" }}
+                onFocus={e=>e.target.style.borderColor="#FF7A00"}
+                onBlur={e=>e.target.style.borderColor="#E5E7EB"} />
+            </div>
+          </div>
+
+          {/* Apto + Indicaciones */}
+          <div style={{ display:"grid", gridTemplateColumns:"1fr 2fr", gap:"0.75rem" }}>
+            <div>
+              <label style={{ fontSize:"0.75rem", fontWeight:600, color:"#6B7280", display:"block", marginBottom:"4px" }}>Nº de apartamento</label>
+              <input value={form.apartment} onChange={e=>setForm((p:any)=>({...p,apartment:e.target.value}))}
+                placeholder="Ej: Apto 302"
+                style={{ width:"100%", padding:"0.6rem 0.75rem", border:"1.5px solid #E5E7EB", borderRadius:"8px",
+                  fontSize:"0.875rem", outline:"none", boxSizing:"border-box" }}
+                onFocus={e=>e.target.style.borderColor="#FF7A00"}
+                onBlur={e=>e.target.style.borderColor="#E5E7EB"} />
+            </div>
+            <div>
+              <label style={{ fontSize:"0.75rem", fontWeight:600, color:"#6B7280", display:"block", marginBottom:"4px" }}>Indicaciones de entrega</label>
+              <input value={form.indicaciones} onChange={e=>setForm((p:any)=>({...p,indicaciones:e.target.value}))}
+                placeholder="Ej: Timbre roto, llamar al llegar"
                 style={{ width:"100%", padding:"0.6rem 0.75rem", border:"1.5px solid #E5E7EB", borderRadius:"8px",
                   fontSize:"0.875rem", outline:"none", boxSizing:"border-box" }}
                 onFocus={e=>e.target.style.borderColor="#FF7A00"}
