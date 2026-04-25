@@ -2,8 +2,8 @@ import { useState, useEffect, useCallback, memo } from "react";
 import { useOutletContext } from "react-router";
 import { supabase } from "../../../utils/supabase/client";
 
-interface Departamento { id: string; nombre: string; color: string; activo: boolean; orden: number; }
-interface Categoria    { id: string; nombre: string; departamento_id: string; activo?: boolean; }
+interface Departamento { id: string; name: string; color: string; is_active: boolean; position: number; }
+interface Categoria    { id: string; name: string; department_id: string; activo?: boolean; }
 
 export default function AdminCatalog() {
   const { isAdmin } = useOutletContext<any>() || {};
@@ -20,8 +20,8 @@ export default function AdminCatalog() {
   const load = useCallback(async () => {
     setLoading(true);
     const [d, c] = await Promise.all([
-      supabase.from("departamentos").select("*").order("orden", { ascending: true }),
-      supabase.from("categorias").select("*").order("nombre"),
+      supabase.from("departments").select("*").order("orden", { ascending: true }),
+      supabase.from("categories").select("*").order("nombre"),
     ]);
     setDeptos(d.data || []);
     setCats(c.data || []);
@@ -30,46 +30,46 @@ export default function AdminCatalog() {
 
   useEffect(() => { load(); }, []);
 
-  const addDepto = async (nombre: string) => {
-    const { error } = await supabase.from("departamentos").insert({ nombre, color:"#FF6835", activo: true, orden: deptos.length + 1 });
+  const addDepto = async (name: string) => {
+    const { error } = await supabase.from("departments").insert({ nombre, color:"#FF6835", is_active: true, position: deptos.length + 1 });
     if (error) notify(error.message, false); else { notify(`${nombre} creado ✓`); load(); }
   };
 
-  const editDepto = async (id: string, nombre: string) => {
-    const { error } = await supabase.from("departamentos").update({ nombre }).eq("id", id);
+  const editDepto = async (id: string, name: string) => {
+    const { error } = await supabase.from("departments").update({ nombre }).eq("id", id);
     if (error) notify(error.message, false); else { notify("Actualizado ✓"); load(); }
   };
 
   const deleteDepto = async (id: string) => {
-    const hasKids = cats.some(c => c.departamento_id === id);
+    const hasKids = cats.some(c => c.department_id === id);
     if (hasKids) { notify("Tiene categorías activas — eliminá primero las categorías", false); return; }
-    const { error } = await supabase.from("departamentos").delete().eq("id", id);
+    const { error } = await supabase.from("departments").delete().eq("id", id);
     if (error) notify(error.message, false); else { notify("Eliminado"); load(); }
   };
 
-  const toggleDepto = async (id: string, activo: boolean) => {
-    await supabase.from("departamentos").update({ activo: !activo }).eq("id", id);
+  const toggleDepto = async (id: string, is_active: boolean) => {
+    await supabase.from("departments").update({ is_active: !activo }).eq("id", id);
     notify(!activo ? "Activado" : "Pausado"); load();
   };
 
-  const addCat = async (departamento_id: string, nombre: string) => {
-    const { error } = await supabase.from("categorias").insert({ nombre, departamento_id });
+  const addCat = async (department_id: string, name: string) => {
+    const { error } = await supabase.from("categories").insert({ nombre, department_id });
     if (error) notify(error.message, false); else { notify(`${nombre} creado ✓`); load(); }
   };
 
-  const editCat = async (id: string, nombre: string) => {
-    const { error } = await supabase.from("categorias").update({ nombre }).eq("id", id);
+  const editCat = async (id: string, name: string) => {
+    const { error } = await supabase.from("categories").update({ nombre }).eq("id", id);
     if (error) notify(error.message, false); else { notify("Actualizado ✓"); load(); }
   };
 
   const deleteCat = async (id: string) => {
-    const { error } = await supabase.from("categorias").delete().eq("id", id);
+    const { error } = await supabase.from("categories").delete().eq("id", id);
     if (error) notify(error.message, false); else { notify("Eliminado"); load(); }
   };
 
   const filteredDeptos = deptos.filter(d =>
-    !search || d.nombre.toLowerCase().includes(search.toLowerCase()) ||
-    cats.filter(c => c.departamento_id === d.id).some(c => c.nombre.toLowerCase().includes(search.toLowerCase()))
+    !search || d.name.toLowerCase().includes(search.toLowerCase()) ||
+    cats.filter(c => c.department_id === d.id).some(c => c.name.toLowerCase().includes(search.toLowerCase()))
   );
 
   return (
@@ -106,7 +106,7 @@ export default function AdminCatalog() {
         {[
           { label:"Departamentos", value: deptos.length,                   color:"#3B82F6" },
           { label:"Categorías",    value: cats.length,                     color:"#8B5CF6" },
-          { label:"Activos",       value: deptos.filter(d=>d.activo).length, color:"#6BB87A" },
+          { label:"Activos",       value: deptos.filter(d=>d.is_active).length, color:"#6BB87A" },
         ].map(s => (
           <div key={s.label} style={{ background:"#fff", borderRadius:"10px", padding:"0.75rem 1.25rem",
             borderLeft:`4px solid ${s.color}`, boxShadow:"0 1px 3px rgba(0,0,0,0.05)", display:"flex", gap:"0.75rem", alignItems:"center" }}>
@@ -135,7 +135,7 @@ export default function AdminCatalog() {
           </div>
         ) : filteredDeptos.map(d => (
           <DepartmentNode key={d.id} depto={d}
-            cats={cats.filter(c => c.departamento_id === d.id)}
+            cats={cats.filter(c => c.department_id === d.id)}
             isAdmin={!!isAdmin}
             onEditDepto={editDepto}
             onDeleteDepto={deleteDepto}
@@ -180,14 +180,14 @@ function AddRootForm({ onAdd }: { onAdd: (name:string)=>void }) {
 const DepartmentNode = memo(({ depto, cats, isAdmin, onEditDepto, onDeleteDepto, onToggleDepto, onAddCat, onEditCat, onDeleteCat }: any) => {
   const [open,      setOpen]      = useState(true);
   const [editing,   setEditing]   = useState(false);
-  const [editName,  setEditName]  = useState(depto.nombre);
+  const [editName,  setEditName]  = useState(depto.name);
   const [addingCat, setAddingCat] = useState(false);
   const [newCat,    setNewCat]    = useState("");
   const [delConfirm,setDelConfirm]= useState(false);
   const [hovered,   setHovered]   = useState(false);
 
   const doEdit = async () => {
-    if (!editName.trim() || editName === depto.nombre) { setEditing(false); return; }
+    if (!editName.trim() || editName === depto.name) { setEditing(false); return; }
     await onEditDepto(depto.id, editName.trim()); setEditing(false);
   };
 
@@ -205,7 +205,7 @@ const DepartmentNode = memo(({ depto, cats, isAdmin, onEditDepto, onDeleteDepto,
         style={{ display:"flex", alignItems:"center", gap:"0.6rem",
           padding:"0.6rem 1rem", borderBottom:"1px solid #F3F4F6",
           background: hovered?"#FAFAFA":"#F9FAFB",
-          opacity: depto.activo ? 1 : 0.55, cursor:"pointer" }}>
+          opacity: depto.is_active ? 1 : 0.55, cursor:"pointer" }}>
 
         <button onClick={()=>setOpen(o=>!o)}
           style={{ background:"none", border:"none", cursor:"pointer", color:"#9CA3AF",
@@ -221,8 +221,8 @@ const DepartmentNode = memo(({ depto, cats, isAdmin, onEditDepto, onDeleteDepto,
             style={{ flex:1, padding:"2px 6px", border:"1.5px solid #FF7A00", borderRadius:"5px", fontSize:"0.9rem", outline:"none" }} />
         ) : (
           <span onDoubleClick={()=>isAdmin&&setEditing(true)} style={{ flex:1, fontWeight:700, fontSize:"0.9rem",
-            color: depto.activo?"#111":"#9CA3AF", textDecoration:depto.activo?"none":"line-through" }}>
-            {depto.nombre}
+            color: depto.is_active?"#111":"#9CA3AF", textDecoration:depto.is_active?"none":"line-through" }}>
+            {depto.name}
           </span>
         )}
 
@@ -238,10 +238,10 @@ const DepartmentNode = memo(({ depto, cats, isAdmin, onEditDepto, onDeleteDepto,
               </>
             ) : (
               <>
-                <Btn color="#3B82F6" onClick={()=>{setEditing(true);setEditName(depto.nombre);}}>✏️</Btn>
+                <Btn color="#3B82F6" onClick={()=>{setEditing(true);setEditName(depto.name);}}>✏️</Btn>
                 <Btn color="#6BB87A" onClick={()=>{setAddingCat(a=>!a);setOpen(true);}}>+ Cat</Btn>
-                <Btn color={depto.activo?"#F59E0B":"#6BB87A"} onClick={()=>onToggleDepto(depto.id,depto.activo)}>
-                  {depto.activo?"⏸":"▶"}
+                <Btn color={depto.is_active?"#F59E0B":"#6BB87A"} onClick={()=>onToggleDepto(depto.id,depto.is_active)}>
+                  {depto.is_active?"⏸":"▶"}
                 </Btn>
                 {delConfirm ? (
                   <>
@@ -291,12 +291,12 @@ const DepartmentNode = memo(({ depto, cats, isAdmin, onEditDepto, onDeleteDepto,
 // ── Item de categoría
 const CategoryItem = memo(({ cat, isAdmin, onEdit, onDelete }: any) => {
   const [editing,   setEditing]   = useState(false);
-  const [editName,  setEditName]  = useState(cat.nombre);
+  const [editName,  setEditName]  = useState(cat.name);
   const [delConfirm,setDelConfirm]= useState(false);
   const [hovered,   setHovered]   = useState(false);
 
   const doEdit = async () => {
-    if (!editName.trim() || editName === cat.nombre) { setEditing(false); return; }
+    if (!editName.trim() || editName === cat.name) { setEditing(false); return; }
     await onEdit(cat.id, editName.trim()); setEditing(false);
   };
 
@@ -317,7 +317,7 @@ const CategoryItem = memo(({ cat, isAdmin, onEdit, onDelete }: any) => {
       ) : (
         <span onDoubleClick={()=>isAdmin&&setEditing(true)}
           style={{ flex:1, fontSize:"0.875rem", color:"#374151" }}>
-          {cat.nombre}
+          {cat.name}
         </span>
       )}
 
@@ -334,7 +334,7 @@ const CategoryItem = memo(({ cat, isAdmin, onEdit, onDelete }: any) => {
             </>
           ) : (
             <>
-              <Btn color="#3B82F6" onClick={()=>{setEditing(true);setEditName(cat.nombre);}}>✏️</Btn>
+              <Btn color="#3B82F6" onClick={()=>{setEditing(true);setEditName(cat.name);}}>✏️</Btn>
               {delConfirm ? (
                 <>
                   <Btn color="#EF4444" bg="#EF4444" textColor="#fff" onClick={()=>onDelete(cat.id)}>Confirmar</Btn>
