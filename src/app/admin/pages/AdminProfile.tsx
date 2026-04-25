@@ -569,7 +569,7 @@ function AddressForm({ form, setForm, editId, onCancel, onSubmit }: any) {
               borderBottom:"1px solid #FFE0CC", background:"rgba(255,255,255,0.5)" }}>
               📍 Vista previa
             </div>
-            <AddressMap lat={form.lat} lng={form.lng} height="100%" />
+            <AddressMap lat={form.lat} lng={form.lng} height="100%" interactive onLocationChange={({address, lat, lng}: {address:string;lat:number;lng:number}) => { const parts = address.split(","); const city = parts.length > 1 ? parts[parts.length-3]?.trim() || "" : ""; setForm((p:any) => ({...p, street:address, lat, lng, city})); }} />
           </div>
         )}
       </div>
