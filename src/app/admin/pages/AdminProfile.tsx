@@ -2,18 +2,21 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { supabase } from "../../../utils/supabase/client";
 import AddressAutocomplete from "../../components/maps/AddressAutocomplete";
 import AddressCard from "../../components/profile/AddressCard";
+import AddressMap from "../../components/maps/AddressMap";
 import { useOutletContext } from "react-router";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 interface Address {
-  id:        string;
-  label:     string;
-  street:    string;
-  city:      string;
-  zip:       string;
-  lat?:      number;
-  lng?:      number;
-  isDefault: boolean;
+  id:         string;
+  label:      string;
+  street:     string;
+  doorNumber?: string;
+  corner?:    string;
+  city:       string;
+  zip:        string;
+  lat?:       number;
+  lng?:       number;
+  isDefault:  boolean;
 }
 
 interface Contact {
@@ -206,7 +209,7 @@ function AddressesTab({ addresses, onChange }: { addresses: Address[]; onChange:
     if (!form.street) return;
     const newAddr: Address = { id: Date.now().toString(), label: form.label, street: form.street, city: form.city, zip: form.zip, lat: form.lat, lng: form.lng, isDefault: addresses.length === 0 };
     onChange([...addresses, newAddr]);
-    setForm({ label:"Casa", street:"", city:"", zip:"" }); setAdding(false);
+    setForm({ label:"Casa", street:"", doorNumber:"", corner:"", city:"", zip:"", lat:0, lng:0 }); setAdding(false);
   };
 
   const handleEdit = () => {
@@ -229,37 +232,13 @@ function AddressesTab({ addresses, onChange }: { addresses: Address[]; onChange:
 
       {/* Form agregar */}
       {(adding || editId) && (
-        <div style={{ background:"#FFF8F5", border:"2px solid #FF7A00", borderRadius:"12px", padding:"1.25rem", display:"flex", flexDirection:"column", gap:"0.75rem" }}>
-          <div style={{ fontWeight:700, color:"#FF7A00", fontSize:"0.9rem" }}>{editId ? "Editar dirección" : "Nueva dirección"}</div>
-          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"0.75rem" }}>
-            <div>
-              <label style={{ fontSize:"0.75rem", fontWeight:600, color:"#6B7280", display:"block", marginBottom:"4px" }}>Etiqueta</label>
-              <select value={form.label} onChange={e=>setForm(p=>({...p,label:e.target.value}))}
-                style={{ width:"100%", padding:"0.6rem 0.75rem", border:"1.5px solid #E5E7EB", borderRadius:"8px", fontSize:"0.875rem" }}>
-                {["Casa","Trabajo","Otro"].map(l=><option key={l}>{l}</option>)}
-              </select>
-            </div>
-            <div>
-              <label style={{ fontSize:"0.75rem", fontWeight:600, color:"#6B7280", display:"block", marginBottom:"4px" }}>Calle y número</label>
-              <AddressAutocomplete
-                value={form.street}
-                onChange={v => setForm(p=>({...p, street:v}))}
-                onSelect={({address, lat, lng}) => setForm(p=>({...p, street:address, lat, lng}))}
-                placeholder="Ej: Av. 18 de Julio 1234"
-              />
-            </div>
-            <InputField label="Ciudad" value={form.city} onChange={v=>setForm(p=>({...p,city:v}))} placeholder="Ej: Montevideo" />
-            <InputField label="Código postal" value={form.zip} onChange={v=>setForm(p=>({...p,zip:v}))} placeholder="Ej: 11300" />
-          </div>
-          <div style={{ display:"flex", gap:"0.5rem", justifyContent:"flex-end" }}>
-            <button onClick={() => { setAdding(false); setEditId(null); }}
-              style={{ padding:"0.5rem 1rem", background:"transparent", border:"1px solid #E5E7EB", borderRadius:"8px", cursor:"pointer", fontSize:"0.85rem" }}>Cancelar</button>
-            <button onClick={editId ? handleEdit : handleAdd}
-              style={{ padding:"0.5rem 1.25rem", background:"#FF7A00", color:"#fff", border:"none", borderRadius:"8px", cursor:"pointer", fontWeight:700, fontSize:"0.85rem" }}>
-              {editId ? "Guardar cambios" : "Agregar"}
-            </button>
-          </div>
-        </div>
+        <AddressForm
+          form={form}
+          setForm={setForm}
+          editId={editId}
+          onCancel={() => { setAdding(false); setEditId(null); setForm({ label:"Casa", street:"", doorNumber:"", corner:"", city:"", zip:"", lat:0, lng:0 }); }}
+          onSubmit={editId ? handleEdit : handleAdd}
+        />
       )}
 
       {/* Lista */}
