@@ -2,16 +2,16 @@ import { useState, useEffect, useCallback, memo } from "react";
 import { useOutletContext } from "react-router";
 import { supabase } from "../../../utils/supabase/client";
 
-interface Departamento { id: string; name: string; color: string; activo: boolean; orden: number; }
-interface Categoria    { id: string; name: string; departamento_id: string; activo?: boolean; }
+interface Departamento { id: string; nombre: string; color: string; activo: boolean; orden: number; }
+interface Categoria    { id: string; nombre: string; departamento_id: string; activo?: boolean; }
 
 export default function AdminCatalog() {
   const { isAdmin } = useOutletContext<any>() || {};
-  const [deptos,   setDeptos]   = useState<Departamento[]>([]);
-  const [cats,     setCats]     = useState<Categoria[]>([]);
-  const [loading,  setLoading]  = useState(true);
-  const [search,   setSearch]   = useState("");
-  const [toast,    setToast]    = useState<{text:string;ok:boolean}|null>(null);
+  const [deptos,  setDeptos]  = useState<Departamento[]>([]);
+  const [cats,    setCats]    = useState<Categoria[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [search,  setSearch]  = useState("");
+  const [toast,   setToast]   = useState<{text:string;ok:boolean}|null>(null);
 
   const notify = (text: string, ok=true) => {
     setToast({text,ok}); setTimeout(()=>setToast(null), 2800);
@@ -20,7 +20,7 @@ export default function AdminCatalog() {
   const load = useCallback(async () => {
     setLoading(true);
     const [d, c] = await Promise.all([
-      supabase.from("departamentos").select("*").order("orden", { ascending: true }),
+      supabase.from("departamentos").select("*").order("orden", { ascending: true, nullsFirst: false }),
       supabase.from("categorias").select("*").order("nombre"),
     ]);
     setDeptos(d.data || []);
@@ -30,19 +30,20 @@ export default function AdminCatalog() {
 
   useEffect(() => { load(); }, []);
 
-  const addDepto = async (name: string) => {
-    const { error } = await supabase.from("departamentos").insert({ nombre, color:"#FF6835", activo: true, orden: deptos.length + 1 });
+  const addDepto = async (nombre: string) => {
+    const { error } = await supabase.from("departamentos")
+      .insert({ nombre, color:"#FF6835", activo: true, orden: deptos.length + 1 });
     if (error) notify(error.message, false); else { notify(`${nombre} creado ✓`); load(); }
   };
 
-  const editDepto = async (id: string, name: string) => {
+  const editDepto = async (id: string, nombre: string) => {
     const { error } = await supabase.from("departamentos").update({ nombre }).eq("id", id);
     if (error) notify(error.message, false); else { notify("Actualizado ✓"); load(); }
   };
 
   const deleteDepto = async (id: string) => {
     const hasKids = cats.some(c => c.departamento_id === id);
-    if (hasKids) { notify("Tiene categorías activas — eliminá primero las categorías", false); return; }
+    if (hasKids) { notify("Tiene categorías — eliminá primero las categorías", false); return; }
     const { error } = await supabase.from("departamentos").delete().eq("id", id);
     if (error) notify(error.message, false); else { notify("Eliminado"); load(); }
   };
@@ -52,12 +53,12 @@ export default function AdminCatalog() {
     notify(!activo ? "Activado" : "Pausado"); load();
   };
 
-  const addCat = async (departamento_id: string, name: string) => {
-    const { error } = await supabase.from("categorias").insert({ nombre, departamento_id });
+  const addCat = async (departamento_id: string, nombre: string) => {
+    const { error } = await supabase.from("categorias").insert({ nombre, departamento_id, activo: true });
     if (error) notify(error.message, false); else { notify(`${nombre} creado ✓`); load(); }
   };
 
-  const editCat = async (id: string, name: string) => {
+  const editCat = async (id: string, nombre: string) => {
     const { error } = await supabase.from("categorias").update({ nombre }).eq("id", id);
     if (error) notify(error.message, false); else { notify("Actualizado ✓"); load(); }
   };
@@ -75,9 +76,8 @@ export default function AdminCatalog() {
   return (
     <div style={{ display:"flex", flexDirection:"column", gap:"1rem" }}>
 
-      {/* Toast */}
       {toast && (
-        <div style={{ orden:"fixed", bottom:"1.5rem", right:"1.5rem", zIndex:9999,
+        <div style={{ position:"fixed", bottom:"1.5rem", right:"1.5rem", zIndex:9999,
           padding:"0.75rem 1.25rem", borderRadius:"10px", fontWeight:600, fontSize:"0.875rem",
           background: toast.ok?"#f0fdf4":"#fef2f2",
           color: toast.ok?"#166534":"#dc2626",
@@ -89,27 +89,32 @@ export default function AdminCatalog() {
 
       {/* Toolbar */}
       <div style={{ display:"flex", gap:"0.75rem", alignItems:"center" }}>
-        <div style={{ orden:"relative", flex:1 }}>
-          <span style={{ orden:"absolute", left:"12px", top:"50%", transform:"translateY(-50%)", color:"#9CA3AF" }}>🔍</span>
-          <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Buscar departamentos o categorías..."
+        <div style={{ position:"relative", flex:1 }}>
+          <span style={{ position:"absolute", left:"12px", top:"50%", transform:"translateY(-50%)", color:"#9CA3AF" }}>🔍</span>
+          <input value={search} onChange={e=>setSearch(e.target.value)}
+            placeholder="Buscar departamentos o categorías..."
             style={{ width:"100%", padding:"0.55rem 0.75rem 0.55rem 2.25rem", border:"1.5px solid #E5E7EB",
               borderRadius:"10px", fontSize:"0.875rem", outline:"none", boxSizing:"border-box" }}
             onFocus={e=>e.target.style.borderColor="#FF7A00"}
             onBlur={e=>e.target.style.borderColor="#E5E7EB"} />
         </div>
-        <button onClick={load} style={{ padding:"0.55rem 0.75rem", background:"#fff", border:"1.5px solid #E5E7EB", borderRadius:"10px", cursor:"pointer", fontSize:"1rem", color:"#6B7280" }}>↻</button>
+        <button onClick={load}
+          style={{ padding:"0.55rem 0.75rem", background:"#fff", border:"1.5px solid #E5E7EB", borderRadius:"10px", cursor:"pointer", fontSize:"1rem", color:"#6B7280" }}>
+          ↻
+        </button>
         {isAdmin && <AddRootForm onAdd={addDepto} />}
       </div>
 
       {/* Stats */}
       <div style={{ display:"flex", gap:"0.75rem" }}>
         {[
-          { label:"Departamentos", value: deptos.length,                   color:"#3B82F6" },
-          { label:"Categorías",    value: cats.length,                     color:"#8B5CF6" },
+          { label:"Departamentos", value: deptos.length,                    color:"#3B82F6" },
+          { label:"Categorías",    value: cats.length,                      color:"#8B5CF6" },
           { label:"Activos",       value: deptos.filter(d=>d.activo).length, color:"#6BB87A" },
         ].map(s => (
           <div key={s.label} style={{ background:"#fff", borderRadius:"10px", padding:"0.75rem 1.25rem",
-            borderLeft:`4px solid ${s.color}`, boxShadow:"0 1px 3px rgba(0,0,0,0.05)", display:"flex", gap:"0.75rem", alignItems:"center" }}>
+            borderLeft:`4px solid ${s.color}`, boxShadow:"0 1px 3px rgba(0,0,0,0.05)",
+            display:"flex", gap:"0.75rem", alignItems:"center" }}>
             <span style={{ fontWeight:800, fontSize:"1.25rem", color:s.color }}>{s.value}</span>
             <span style={{ fontSize:"0.78rem", color:"#6B7280" }}>{s.label}</span>
           </div>
@@ -117,20 +122,21 @@ export default function AdminCatalog() {
       </div>
 
       {/* Tree */}
-      <div style={{ background:"#fff", borderRadius:"14px", overflow:"hidden", boxShadow:"0 1px 4px rgba(0,0,0,0.06)", border:"1px solid #F3F4F6" }}>
+      <div style={{ background:"#fff", borderRadius:"14px", overflow:"hidden",
+        boxShadow:"0 1px 4px rgba(0,0,0,0.06)", border:"1px solid #F3F4F6" }}>
         {loading ? (
           <div style={{ padding:"4rem", textAlign:"center" }}>
             {[280,220,180,240].map((w,i) => (
-              <div key={i} style={{ height:"44px", background:"#F3F4F6", borderRadius:"8px", width:`${w}px`, margin:"6px auto", animation:"pulse 1.5s ease-in-out infinite" }} />
+              <div key={i} style={{ height:"44px", background:"#F3F4F6", borderRadius:"8px",
+                width:`${w}px`, margin:"6px auto", animation:"pulse 1.5s ease-in-out infinite" }} />
             ))}
             <style>{`@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}`}</style>
           </div>
         ) : filteredDeptos.length === 0 ? (
           <div style={{ padding:"4rem", textAlign:"center" }}>
             <div style={{ fontSize:"3rem", marginBottom:"0.75rem" }}>{search?"🔍":"🌱"}</div>
-            <div style={{ fontWeight:700, color:"#374151" }}>{search?`Sin resultados para "${search}"`:"Catálogo vacío"}</div>
-            <div style={{ color:"#9CA3AF", fontSize:"0.85rem", marginTop:"0.25rem" }}>
-              {search?"Probá con otro término":"Creá el primer departamento"}
+            <div style={{ fontWeight:700, color:"#374151" }}>
+              {search?`Sin resultados para "${search}"`:"Catálogo vacío"}
             </div>
           </div>
         ) : filteredDeptos.map(d => (
@@ -150,8 +156,7 @@ export default function AdminCatalog() {
   );
 }
 
-// ── Formulario agregar departamento raíz
-function AddRootForm({ onAdd }: { onAdd: (name:string)=>void }) {
+function AddRootForm({ onAdd }: { onAdd:(n:string)=>void }) {
   const [show, setShow] = useState(false);
   const [name, setName] = useState("");
   const handle = async () => {
@@ -164,27 +169,32 @@ function AddRootForm({ onAdd }: { onAdd: (name:string)=>void }) {
       <input autoFocus value={name} onChange={e=>setName(e.target.value)}
         placeholder="Nuevo departamento..."
         onKeyDown={e=>{ if(e.key==="Enter") handle(); if(e.key==="Escape"){setShow(false);setName("");} }}
-        style={{ padding:"0.45rem 0.75rem", border:"1.5px solid #FF7A00", borderRadius:"8px", fontSize:"0.875rem", outline:"none", width:"200px" }} />
-      <button onClick={handle} style={{ padding:"0.45rem 0.9rem", background:"#FF7A00", color:"#fff", border:"none", borderRadius:"8px", cursor:"pointer", fontWeight:700, fontSize:"0.85rem" }}>Crear</button>
-      <button onClick={()=>{setShow(false);setName("");}} style={{ padding:"0.45rem 0.6rem", background:"transparent", border:"1px solid #D1D5DB", borderRadius:"8px", cursor:"pointer", fontSize:"0.85rem", color:"#6B7280" }}>✕</button>
+        style={{ padding:"0.45rem 0.75rem", border:"1.5px solid #FF7A00", borderRadius:"8px",
+          fontSize:"0.875rem", outline:"none", width:"200px" }} />
+      <button onClick={handle}
+        style={{ padding:"0.45rem 0.9rem", background:"#FF7A00", color:"#fff", border:"none",
+          borderRadius:"8px", cursor:"pointer", fontWeight:700, fontSize:"0.85rem" }}>Crear</button>
+      <button onClick={()=>{setShow(false);setName("");}}
+        style={{ padding:"0.45rem 0.6rem", background:"transparent", border:"1px solid #D1D5DB",
+          borderRadius:"8px", cursor:"pointer", fontSize:"0.85rem", color:"#6B7280" }}>✕</button>
     </div>
   ) : (
     <button onClick={()=>setShow(true)}
-      style={{ padding:"0.55rem 1.25rem", background:"#FF7A00", color:"#fff", border:"none", borderRadius:"10px", cursor:"pointer", fontWeight:700, fontSize:"0.875rem", whiteSpace:"nowrap" }}>
+      style={{ padding:"0.55rem 1.25rem", background:"#FF7A00", color:"#fff", border:"none",
+        borderRadius:"10px", cursor:"pointer", fontWeight:700, fontSize:"0.875rem", whiteSpace:"nowrap" }}>
       + Departamento
     </button>
   );
 }
 
-// ── Nodo de departamento
 const DepartmentNode = memo(({ depto, cats, isAdmin, onEditDepto, onDeleteDepto, onToggleDepto, onAddCat, onEditCat, onDeleteCat }: any) => {
-  const [open,      setOpen]      = useState(true);
-  const [editing,   setEditing]   = useState(false);
-  const [editName,  setEditName]  = useState(depto.nombre);
-  const [addingCat, setAddingCat] = useState(false);
-  const [newCat,    setNewCat]    = useState("");
-  const [delConfirm,setDelConfirm]= useState(false);
-  const [hovered,   setHovered]   = useState(false);
+  const [open,       setOpen]       = useState(true);
+  const [editing,    setEditing]    = useState(false);
+  const [editName,   setEditName]   = useState(depto.nombre);
+  const [addingCat,  setAddingCat]  = useState(false);
+  const [newCat,     setNewCat]     = useState("");
+  const [delConfirm, setDelConfirm] = useState(false);
+  const [hovered,    setHovered]    = useState(false);
 
   const doEdit = async () => {
     if (!editName.trim() || editName === depto.nombre) { setEditing(false); return; }
@@ -198,37 +208,30 @@ const DepartmentNode = memo(({ depto, cats, isAdmin, onEditDepto, onDeleteDepto,
 
   return (
     <div>
-      {/* ── Fila departamento ── */}
-      <div
-        onMouseEnter={()=>setHovered(true)}
-        onMouseLeave={()=>setHovered(false)}
-        style={{ display:"flex", alignItems:"center", gap:"0.6rem",
-          padding:"0.6rem 1rem", borderBottom:"1px solid #F3F4F6",
-          background: hovered?"#FAFAFA":"#F9FAFB",
+      <div onMouseEnter={()=>setHovered(true)} onMouseLeave={()=>setHovered(false)}
+        style={{ display:"flex", alignItems:"center", gap:"0.6rem", padding:"0.6rem 1rem",
+          borderBottom:"1px solid #F3F4F6", background: hovered?"#FAFAFA":"#F9FAFB",
           opacity: depto.activo ? 1 : 0.55, cursor:"pointer" }}>
-
         <button onClick={()=>setOpen(o=>!o)}
           style={{ background:"none", border:"none", cursor:"pointer", color:"#9CA3AF",
             fontSize:"0.7rem", width:"16px", flexShrink:0, transition:"transform 0.15s",
             transform: open?"rotate(90deg)":"rotate(0deg)" }}>▶</button>
-
         <span style={{ fontSize:"1rem", flexShrink:0 }}>🏢</span>
-
         {editing ? (
           <input value={editName} onChange={e=>setEditName(e.target.value)} autoFocus
             onKeyDown={e=>{ if(e.key==="Enter") doEdit(); if(e.key==="Escape") setEditing(false); }}
             onClick={e=>e.stopPropagation()}
-            style={{ flex:1, padding:"2px 6px", border:"1.5px solid #FF7A00", borderRadius:"5px", fontSize:"0.9rem", outline:"none" }} />
+            style={{ flex:1, padding:"2px 6px", border:"1.5px solid #FF7A00", borderRadius:"5px",
+              fontSize:"0.9rem", outline:"none" }} />
         ) : (
-          <span onDoubleClick={()=>isAdmin&&setEditing(true)} style={{ flex:1, fontWeight:700, fontSize:"0.9rem",
-            color: depto.activo?"#111":"#9CA3AF", textDecoration:depto.activo?"none":"line-through" }}>
+          <span onDoubleClick={()=>isAdmin&&setEditing(true)}
+            style={{ flex:1, fontWeight:700, fontSize:"0.9rem",
+              color: depto.activo?"#111":"#9CA3AF",
+              textDecoration: depto.activo?"none":"line-through" }}>
             {depto.nombre}
           </span>
         )}
-
         <span style={{ fontSize:"0.72rem", color:"#9CA3AF" }}>{cats.length} cats</span>
-
-        {/* Acciones — aparecen en hover */}
         {isAdmin && (hovered || editing) && (
           <div style={{ display:"flex", gap:"0.3rem", flexShrink:0 }} onClick={e=>e.stopPropagation()}>
             {editing ? (
@@ -257,7 +260,6 @@ const DepartmentNode = memo(({ depto, cats, isAdmin, onEditDepto, onDeleteDepto,
         )}
       </div>
 
-      {/* ── Form agregar categoría ── */}
       {addingCat && isAdmin && (
         <div style={{ display:"flex", gap:"0.5rem", alignItems:"center",
           padding:"0.4rem 1rem 0.4rem 2.5rem", background:"#FFF8F5", borderBottom:"1px solid #FFE4CC" }}>
@@ -265,20 +267,24 @@ const DepartmentNode = memo(({ depto, cats, isAdmin, onEditDepto, onDeleteDepto,
           <input autoFocus value={newCat} onChange={e=>setNewCat(e.target.value)}
             placeholder="Nueva categoría..."
             onKeyDown={e=>{ if(e.key==="Enter") doAddCat(); if(e.key==="Escape"){setAddingCat(false);setNewCat("");} }}
-            style={{ flex:1, padding:"0.3rem 0.6rem", border:"1.5px solid #FF7A00", borderRadius:"6px", fontSize:"0.85rem", outline:"none", maxWidth:"280px" }} />
-          <button onClick={doAddCat} style={{ padding:"0.3rem 0.75rem", background:"#FF7A00", color:"#fff", border:"none", borderRadius:"6px", cursor:"pointer", fontSize:"0.8rem", fontWeight:700 }}>Agregar</button>
-          <button onClick={()=>{setAddingCat(false);setNewCat("");}} style={{ padding:"0.3rem 0.5rem", background:"transparent", border:"1px solid #D1D5DB", borderRadius:"6px", cursor:"pointer", fontSize:"0.8rem", color:"#6B7280" }}>✕</button>
+            style={{ flex:1, padding:"0.3rem 0.6rem", border:"1.5px solid #FF7A00",
+              borderRadius:"6px", fontSize:"0.85rem", outline:"none", maxWidth:"280px" }} />
+          <button onClick={doAddCat}
+            style={{ padding:"0.3rem 0.75rem", background:"#FF7A00", color:"#fff", border:"none",
+              borderRadius:"6px", cursor:"pointer", fontSize:"0.8rem", fontWeight:700 }}>Agregar</button>
+          <button onClick={()=>{setAddingCat(false);setNewCat("");}}
+            style={{ padding:"0.3rem 0.5rem", background:"transparent", border:"1px solid #D1D5DB",
+              borderRadius:"6px", cursor:"pointer", fontSize:"0.8rem", color:"#6B7280" }}>✕</button>
         </div>
       )}
 
-      {/* ── Categorías ── */}
       {open && (
         <div style={{ borderLeft:"3px solid #FF7A0030", marginLeft:"28px" }}>
           {cats.length === 0 ? (
             <div style={{ padding:"0.75rem 1rem", color:"#9CA3AF", fontSize:"0.8rem", fontStyle:"italic" }}>
-              Sin categorías — {isAdmin?"usá '+ Cat' para agregar":"contactá al administrador"}
+              Sin categorías {isAdmin?"— usá '+ Cat' para agregar":""}
             </div>
-          ) : cats.map(cat => (
+          ) : cats.map((cat:any) => (
             <CategoryItem key={cat.id} cat={cat} isAdmin={isAdmin}
               onEdit={onEditCat} onDelete={onDeleteCat} />
           ))}
@@ -288,12 +294,11 @@ const DepartmentNode = memo(({ depto, cats, isAdmin, onEditDepto, onDeleteDepto,
   );
 });
 
-// ── Item de categoría
 const CategoryItem = memo(({ cat, isAdmin, onEdit, onDelete }: any) => {
-  const [editing,   setEditing]   = useState(false);
-  const [editName,  setEditName]  = useState(cat.nombre);
-  const [delConfirm,setDelConfirm]= useState(false);
-  const [hovered,   setHovered]   = useState(false);
+  const [editing,    setEditing]    = useState(false);
+  const [editName,   setEditName]   = useState(cat.nombre);
+  const [delConfirm, setDelConfirm] = useState(false);
+  const [hovered,    setHovered]    = useState(false);
 
   const doEdit = async () => {
     if (!editName.trim() || editName === cat.nombre) { setEditing(false); return; }
@@ -301,30 +306,24 @@ const CategoryItem = memo(({ cat, isAdmin, onEdit, onDelete }: any) => {
   };
 
   return (
-    <div
-      onMouseEnter={()=>setHovered(true)}
-      onMouseLeave={()=>setHovered(false)}
+    <div onMouseEnter={()=>setHovered(true)} onMouseLeave={()=>setHovered(false)}
       style={{ display:"flex", alignItems:"center", gap:"0.5rem",
         padding:"0.5rem 1rem", borderBottom:"1px solid #F9FAFB",
         background: hovered?"#FAFAFA":"#fff" }}>
-
       <span style={{ fontSize:"0.85rem", flexShrink:0 }}>📂</span>
-
       {editing ? (
         <input value={editName} onChange={e=>setEditName(e.target.value)} autoFocus
           onKeyDown={e=>{ if(e.key==="Enter") doEdit(); if(e.key==="Escape") setEditing(false); }}
-          style={{ flex:1, padding:"2px 6px", border:"1.5px solid #8B5CF6", borderRadius:"5px", fontSize:"0.875rem", outline:"none" }} />
+          style={{ flex:1, padding:"2px 6px", border:"1.5px solid #8B5CF6",
+            borderRadius:"5px", fontSize:"0.875rem", outline:"none" }} />
       ) : (
         <span onDoubleClick={()=>isAdmin&&setEditing(true)}
           style={{ flex:1, fontSize:"0.875rem", color:"#374151" }}>
           {cat.nombre}
         </span>
       )}
-
-      <span style={{ padding:"1px 7px", borderRadius:"20px", fontSize:"0.65rem", fontWeight:700, background:"#8B5CF618", color:"#8B5CF6" }}>
-        Categoría
-      </span>
-
+      <span style={{ padding:"1px 7px", borderRadius:"20px", fontSize:"0.65rem", fontWeight:700,
+        background:"#8B5CF618", color:"#8B5CF6" }}>Categoría</span>
       {isAdmin && (hovered || editing) && (
         <div style={{ display:"flex", gap:"0.3rem", flexShrink:0 }}>
           {editing ? (
@@ -351,12 +350,12 @@ const CategoryItem = memo(({ cat, isAdmin, onEdit, onDelete }: any) => {
   );
 });
 
-// ── Botón genérico
 function Btn({ color, bg, textColor, onClick, children }: any) {
   return (
     <button onClick={e=>{e.stopPropagation();onClick();}}
       style={{ padding:"2px 8px", background:bg||"transparent", border:`1px solid ${color}`,
-        color:textColor||color, borderRadius:"5px", cursor:"pointer", fontSize:"0.72rem", fontWeight:600 }}>
+        color:textColor||color, borderRadius:"5px", cursor:"pointer",
+        fontSize:"0.72rem", fontWeight:600 }}>
       {children}
     </button>
   );
