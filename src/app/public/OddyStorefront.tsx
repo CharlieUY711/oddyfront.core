@@ -2294,13 +2294,7 @@ export default function OddyStorefront() {
   const isSH = mode === 'sh';
 
   // Mapeo de opciones del menú a categorías relacionadas
-  const getCategoriesForMenu = (menuItem: string): string[] => {
-    const depto = departamentos?.find((d) => d.nombre === menuItem);
-    if (depto && depto.categorias && depto.categorias.length > 0) {
-      return depto.categorias.map((cat) => cat.nombre);
-    }
-    return [];
-  };
+;
 
   // Cerrar dropdown al hacer click fuera
   useEffect(() => {
@@ -2675,13 +2669,12 @@ export default function OddyStorefront() {
         </div>
         {/* Menú de categorías */}
         <div className="oddy-categories-menu">
-          {departamentos.map((depto: any) => {
+          {(departamentos || []).map((depto) => {
             const menuItem = depto.nombre;
-            const categories = getCategoriesForMenu(menuItem);
+            const deptoCats = (depto.categorias || []).map((cat) => cat.nombre);
             const isOpen = openDropdown === menuItem;
-            
             return (
-              <div 
+              <div
                 key={menuItem}
                 className="oddy-menu-item"
                 onClick={(e) => {
@@ -2690,19 +2683,19 @@ export default function OddyStorefront() {
                 }}
               >
                 <span>{menuItem}</span>
-                {isOpen && categories.length > 0 && (
-                  <div 
-                    className="oddy-dropdown"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    {categories.map((category, idx) => (
-                      <div 
-                        key={idx}
+                {deptoCats.length > 0 && (
+                  <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <polyline points="6 9 12 15 18 9"/>
+                  </svg>
+                )}
+                {isOpen && deptoCats.length > 0 && (
+                  <div className="oddy-dropdown">
+                    {deptoCats.map((category) => (
+                      <div
+                        key={category}
                         className="oddy-dropdown-item"
                         onClick={() => {
-                          // Resetear selección - no dejar nada seleccionado
                           setSelectedCategory(null);
-                          // Aquí puedes agregar la lógica de navegación/filtrado
                           setOpenDropdown(null);
                         }}
                       >
