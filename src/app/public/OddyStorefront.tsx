@@ -2295,40 +2295,11 @@ export default function OddyStorefront() {
 
   // Mapeo de opciones del menú a categorías relacionadas
   const getCategoriesForMenu = (menuItem: string): string[] => {
-    if (!departamentos || departamentos.length === 0) {
-      // Fallback: categorías por defecto si no hay departamentos
-      const defaultCategories: Record<string, string[]> = {
-        'Electrodomésticos': ['Lavadoras', 'Refrigeradores', 'Microondas', 'Licuadoras', 'Aspiradoras'],
-        'Almacén': ['Aceites', 'Conservas', 'Pastas', 'Arroz', 'Harinas'],
-        'Limpieza': ['Detergentes', 'Lavandinas', 'Desinfectantes', 'Esponjas', 'Trapos'],
-        'Moda': ['Ropa', 'Calzado', 'Bolsos', 'Accesorios', 'Relojes'],
-        'Electrónica': ['Celulares', 'Tablets', 'Laptops', 'Auriculares', 'Cámaras'],
-        'Hogar': ['Muebles', 'Decoración', 'Iluminación', 'Cortinas', 'Alfombras'],
-        'Accesorios': ['Cargadores', 'Fundas', 'Cables', 'Soportes', 'Estuches'],
-        'Mascotas': ['Alimento', 'Juguetes', 'Camas', 'Collares', 'Higiene']
-      };
-      return defaultCategories[menuItem] || [];
+    const depto = departamentos?.find((d) => d.nombre === menuItem);
+    if (depto && depto.categorias && depto.categorias.length > 0) {
+      return depto.categorias.map((cat) => cat.nombre);
     }
-
-    // Mapeo basado en nombres de departamentos
-    const menuMapping: Record<string, string[]> = {
-      'Electrodomésticos': ['Electro', 'Electrodomésticos'],
-      'Almacén': ['Almacén'],
-      'Limpieza': ['Limpieza'],
-      'Moda': ['Moda'],
-      'Electrónica': ['Electro', 'Celulares'],
-      'Hogar': ['Hogar', 'Electro'],
-      'Accesorios': ['Celulares', 'Electro'],
-      'Mascotas': ['Mascotas']
-    };
-
-    const relatedNames = menuMapping[menuItem] || [];
-    const categories = departamentos
-      .filter(d => relatedNames.some(name => d.nombre.toLowerCase().includes(name.toLowerCase()) || name.toLowerCase().includes(d.nombre.toLowerCase())))
-      .map(d => d.nombre);
-
-    // Si no hay coincidencias, usar todos los departamentos
-    return categories.length > 0 ? categories : departamentos.slice(0, 5).map(d => d.nombre);
+    return [];
   };
 
   // Cerrar dropdown al hacer click fuera
