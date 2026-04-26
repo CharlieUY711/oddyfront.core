@@ -1,14 +1,24 @@
-import { readFileSync, writeFileSync } from 'fs';
-const file = 'src/app/admin/components/AdminLayout.tsx';
-let c = readFileSync(file, 'utf8');
+import { readFileSync, writeFileSync } from "fs";
 
-// Sidebar 240px
-c = c.replace(/width:"[0-9]+px"/, 'width:"240px"');
+// Fix OddyStorefront.tsx
+const file1 = "src/app/public/OddyStorefront.tsx";
+let c1 = readFileSync(file1, "utf8");
+c1 = c1.split("[departamentos.map](http://departamentos.map)").join("departamentos.map");
+c1 = c1.split("[categorias.map](http://categorias.map)").join("categorias.map");
+c1 = c1.split("[depts.map](http://depts.map)").join("depts.map");
+c1 = c1.split("[d.id](http://d.id)").join("d.id");
+writeFileSync(file1, c1, "utf8");
+console.log("Storefront - departamentos.map OK:", c1.includes("departamentos.map((depto"));
 
-// Topbar height 80px — todos los lugares
-c = c.replaceAll('height:"62px"', 'height:"80px"');
-c = c.replaceAll('height:"56px"', 'height:"80px"');
+// Fix useProductos.ts
+const file2 = "src/app/hooks/useProductos.ts";
+let c2 = readFileSync(file2, "utf8");
+c2 = c2.split("[departamentos.map](http://departamentos.map)").join("departamentos.map");
+c2 = c2.split("[depts.map](http://depts.map)").join("depts.map");
+c2 = c2.split("[d.id](http://d.id)").join("d.id");
+writeFileSync(file2, c2, "utf8");
+console.log("Hook - depts.map OK:", c2.includes("depts.map(d =>"));
 
-writeFileSync(file, c, 'utf8');
-console.log('Sidebar:', c.match(/width:"[0-9]+px"/)?.[0]);
-console.log('Topbar heights:', c.match(/height:"80px"/g)?.length, 'ocurrencias');
+// Verificar sin corruption
+console.log("Storefront limpio:", !c1.includes("http://departamentos") ? "SI" : "NO");
+console.log("Hook limpio:", !c2.includes("http://depts") ? "SI" : "NO");
