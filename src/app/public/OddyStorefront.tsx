@@ -2704,7 +2704,8 @@ export default function OddyStorefront() {
         </div>
         {/* Menú de categorías */}
         <div className="oddy-categories-menu">
-          {['Electrodomésticos', 'Almacén', 'Limpieza', 'Moda', 'Electrónica', 'Hogar', 'Accesorios', 'Mascotas'].map((menuItem) => {
+          {departamentos.map((depto: any) => {
+            const menuItem = depto.nombre;
             const categories = getCategoriesForMenu(menuItem);
             const isOpen = openDropdown === menuItem;
             
