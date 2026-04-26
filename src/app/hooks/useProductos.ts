@@ -1,31 +1,110 @@
+/* =====================================================
+   Hook para cargar productos desde la API
+   Charlie Marketplace Builder v1.5
+   ===================================================== */
 import { useState, useEffect } from 'react';
-import { supabase } from '../../utils/supabase/client';
+import { 
+  fetchProductosMarket, 
+  fetchProductosSecondHand,
+  type ProductoMarket,
+  type ProductoSecondHand 
+} from '../services/productosApi';
 import { fetchDepartamentos, type Departamento } from '../services/departamentosApi';
 
-export interface ShProduct {
-  id: string;
-  title: string;
-  price: number;
-  originalPrice?: number;
-  image: string;
-  category: string;
-  department?: string;
-  rating?: number;
-  reviews?: number;
-  badge?: string;
-  badgeColor?: string;
-  seller?: string;
-  condition?: string;
+// Tipos del componente (compatibilidad)
+export interface MktProduct {
+  id: number;
+  img: string;
+  d: string;
+  n: string;
+  p: string;
+  o: string | null;
+  b: string | null;
+  bt: string;
+  desc: string;
+  r: number;
+  rv: number;
+  q: string;
+  vids?: string[];
+  publishedDate?: string;
 }
 
-interface DepartamentoConCats extends Departamento {
-  categorias: { id: string; nombre: string; departamento_id: string }[];
+export interface ShProduct {
+  id: number;
+  img: string;
+  d: string;
+  n: string;
+  p: string;
+  og: string;
+  c: number;
+  desc: string;
+  r: number;
+  rv: number;
+  q: string;
+  vids?: string[];
+  publishedDate?: string;
+}
+
+// Transformar ProductoMarket a MktProduct
+function transformMarketProduct(p: ProductoMarket, deptColors: Record<string, string>): MktProduct {
+  const precio = p.precio ? p.precio.toLocaleString('es-UY') : '0';
+  const precioOriginal = p.precio_original ? p.precio_original.toLocaleString('es-UY') : null;
+  const descuento = precioOriginal && p.precio_original && p.precio
+    ? Math.round(((p.precio_original - p.precio) / p.precio_original) * 100)
+    : null;
+  const badge = descuento ? `-${descuento}%` : p.badge || null;
+  
+  return {
+    id: parseInt(p.id.replace(/-/g, '').substring(0, 8), 16) || Math.random() * 1000000, // Convertir UUID a número
+    img: p.imagen_principal || '',
+    d: p.departamento_nombre || p.departamento?.nombre || 'Sin categoría',
+    n: p.nombre,
+    p: precio,
+    o: precioOriginal,
+    b: badge,
+    bt: p.badge_color || '',
+    desc: p.descripcion || '',
+    r: p.rating || 0,
+    rv: p.rating_count || 0,
+    q: '', // Se cargará desde preguntas
+    vids: (p.videos || []).map((v: any) => typeof v === 'string' ? v : v?.url).filter(Boolean),
+    publishedDate: p.published_date ? new Date(p.published_date).toLocaleDateString('es-UY') : undefined,
+  };
+}
+
+// Transformar ProductoSecondHand a ShProduct
+function transformSecondHandProduct(p: ProductoSecondHand, deptColors: Record<string, string>): ShProduct {
+  const precio = p.precio ? p.precio.toLocaleString('es-UY') : '0';
+  const precioOriginal = p.precio_original ? p.precio_original.toLocaleString('es-UY') : '';
+  const condicionMap: Record<string, number> = {
+    'Excelente': 5,
+    'Muy bueno': 4,
+    'Bueno': 3,
+    'Regular': 2,
+    'Aceptable': 1,
+  };
+  
+  return {
+    id: parseInt(p.id.replace(/-/g, '').substring(0, 8), 16) || Math.random() * 1000000,
+    img: p.imagen_principal || '',
+    d: p.departamento_nombre || p.departamento?.nombre || 'Sin categoría',
+    n: `${p.nombre}${p.condicion ? ` · ${p.condicion}` : ''}`,
+    p: precio,
+    og: precioOriginal,
+    c: p.condicion ? condicionMap[p.condicion] || 3 : 3,
+    desc: p.descripcion || '',
+    r: p.rating || 0,
+    rv: p.rating_count || 0,
+    q: '',
+    vids: (p.videos || []).map((v: any) => typeof v === 'string' ? v : v?.url).filter(Boolean),
+    publishedDate: p.published_date ? new Date(p.published_date).toLocaleDateString('es-UY') : undefined,
+  };
 }
 
 export function useProductos() {
-  const [productos, setProductos] = useState<ShProduct[]>([]);
+  const [productosMarket, setProductosMarket] = useState<MktProduct[]>([]);
   const [productosSecondHand, setProductosSecondHand] = useState<ShProduct[]>([]);
-  const [departamentos, setDepartamentos] = useState<DepartamentoConCats[]>([]);
+  const [departamentos, setDepartamentos] = useState<Departamento[]>([]);
   const [deptColors, setDeptColors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -36,49 +115,46 @@ export function useProductos() {
         setLoading(true);
         setError(null);
 
-        // Cargar departamentos
+        // Cargar departamentos primero
         const depts = await fetchDepartamentos(true);
-
-        // Traer categorias para el menu
-        const { data: catsData } = await supabase
-          .from('categorias')
-          .select('id, nombre, departamento_id')
-          .eq('activo', true)
-          .order('nombre');
-
-        // Anidar categorias en departamentos
-        const deptsConCats: DepartamentoConCats[] = depts.map(function(d) {
-          return {
-            ...d,
-            categorias: (catsData || []).filter(function(cat) {
-              return cat.departamento_id === d.id;
-            })
-          };
-        });
-        setDepartamentos(deptsConCats);
-
-        // Crear mapa de colores
+        setDepartamentos(depts);
+        
+        // Crear mapa de colores de departamentos
         const colors: Record<string, string> = {};
-        depts.forEach(function(dept) {
+        depts.forEach(dept => {
           colors[dept.nombre] = dept.color || '#C8C4BE';
         });
         setDeptColors(colors);
 
-        // Cargar productos (mock por ahora)
-        setProductos([]);
-        setProductosSecondHand([]);
+        // Cargar productos
+        const [marketResult, secondhandResult] = await Promise.allSettled([
+          fetchProductosMarket({ estado: 'activo', limit: 100 }),
+          fetchProductosSecondHand({ estado: 'activo', limit: 100 }),
+        ]);
 
-      } catch (err: any) {
-        setError(err.message || 'Error cargando datos');
+        const market = marketResult.status === 'fulfilled' ? marketResult.value : [];
+        const secondhand = secondhandResult.status === 'fulfilled' ? secondhandResult.value : [];
+
+        // Transformar productos
+        setProductosMarket(market.map(p => transformMarketProduct(p, colors)));
+        setProductosSecondHand(secondhand.map(p => transformSecondHandProduct(p, colors)));
+
+      } catch (err) {
+        console.error('Error cargando productos:', err);
+        setError(err instanceof Error ? err.message : 'Error desconocido');
+        // Mantener arrays vacíos en caso de error
+        setProductosMarket([]);
+        setProductosSecondHand([]);
       } finally {
         setLoading(false);
       }
     }
+
     loadData();
   }, []);
 
   return {
-    productos,
+    productosMarket,
     productosSecondHand,
     departamentos,
     deptColors,
@@ -86,3 +162,6 @@ export function useProductos() {
     error,
   };
 }
+
+
+
