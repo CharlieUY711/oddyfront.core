@@ -117,7 +117,18 @@ export function useProductos() {
 
         // Cargar departamentos primero
         const depts = await fetchDepartamentos(true);
-        setDepartamentos(depts);
+        // Traer categorias para el menu
+        const { data: catsData } = await supabase
+          .from("categorias")
+          .select("id, nombre, departamento_id")
+          .eq("activo", true)
+          .order("nombre");
+        // Anidar categorias en departamentos
+        const deptsConCats = depts.map(d => ({
+          ...d,
+          categorias: (catsData || []).filter(c => c.departamento_id === d.id)
+        }));
+        setDepartamentos(deptsConCats as any);
         
         // Crear mapa de colores de departamentos
         const colors: Record<string, string> = {};
