@@ -1,4 +1,4 @@
-/* =====================================================
+﻿/* =====================================================
    ODDY Storefront — OddyStorefront.tsx
    Charlie Marketplace Builder v1.5
    Frontstore principal: Market + Segunda Mano
@@ -2490,14 +2490,14 @@ export default function OddyStorefront() {
       {/* ── TOPBAR ── */}
       <header className="oddy-tb">
         {/* ── HEADER MÓVIL: SOLO BUSCADOR ARRIBA ── */}
-        <div className="oddy-mobile-header-top">
+        <div className="oddy-mobile-header-top" style={{ paddingTop: "10px" }}>
           <div className="oddy-search oddy-mobile-search-only">
             <input type="text" placeholder="encontra lo que buscas" />
           </div>
         </div>
         
         {/* ── HEADER PRINCIPAL RESPONSIVE (DESKTOP) ── */}
-        <div className="oddy-header">
+        <div className="oddy-header" style={{ paddingTop: "10px" }}>
           <div className="oddy-header-left">
             <div className="oddy-logo">
               <svg viewBox="0 0 200 120" preserveAspectRatio="xMidYMid meet">
