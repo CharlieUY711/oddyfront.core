@@ -1,4 +1,4 @@
-/* =====================================================
+﻿/* =====================================================
    ODDY Storefront — oddy.css
    Charlie Marketplace Builder v1.5
    ===================================================== */
@@ -423,6 +423,7 @@ body {
 }
 .oddy-menu-item:hover span {
   opacity: 0.8;
+  color: #000000;
 }
 .oddy-dropdown {
   position: absolute;
