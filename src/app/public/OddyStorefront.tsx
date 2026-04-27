@@ -2711,7 +2711,7 @@ export default function OddyStorefront() {
         </div>
       </header>
       {/* Barra de modo */}
-      <div ref={greenBarRef} style={{ position: 'fixed', top: headerHeight, left: 0, right: 0, width: '100%', height: '48px', backgroundColor: isSH ? '#FF6835' : '#6BB87A', transition: 'background-color 0.4s ease', zIndex: 299, display: 'flex', alignItems: 'center', gap: '12px', paddingLeft: '12px', paddingRight: '12px' }}>
+      <div ref={greenBarRef} style={{ position: 'fixed', top: headerHeight + 10, left: 0, right: 0, width: '100%', height: '48px', backgroundColor: isSH ? '#FF6835' : '#6BB87A', transition: 'background-color 0.4s ease', zIndex: 299, display: 'flex', alignItems: 'center', gap: '12px', paddingLeft: '12px', paddingRight: '12px' }}>
         <button onClick={() => setMode(isSH ? 'mkt' : 'sh')} className="oddy-login-btn oddy-mode-btn" style={{ flexShrink: 0, minWidth: '140px', backgroundColor: 'transparent', borderColor: 'rgba(255,255,255,0.6)' }}>
           {isSH ? '🛍 Market' : '♻️ Second Hand'}
         </button>
