@@ -10,15 +10,13 @@ import PendingPage             from "./public/PendingPage";
 import DashboardRedirect       from "./public/DashboardRedirect";
 import AdminLayout             from "./admin/components/AdminLayout";
 import AdminDashboard          from "./admin/pages/AdminDashboard";
-import AdminProducts           from "./admin/pages/AdminProducts";
 import AdminOrders             from "./admin/pages/AdminOrders";
 import AdminAnalytics          from "./admin/pages/AdminAnalytics";
 import AdminML                 from "./admin/pages/AdminML";
 import AdminCatalog            from "./admin/pages/AdminCatalog";
 import AdminProfile            from "./admin/pages/AdminProfile";
 import AdminPublicaciones      from "./admin/pages/AdminPublicaciones";
-import AdminArticulos          from "./admin/pages/AdminArticulos";
-import AdminArticulos          from "./admin/pages/AdminArticulos";
+import AdminArticulos from "./admin/pages/AdminArticulos";
 
 export const TODAS_LAS_RUTAS: (RouteObject & { id: string })[] = [
   { id: "storefront",          path: "/",           Component: OddyStorefront },
