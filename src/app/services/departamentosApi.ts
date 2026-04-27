@@ -15,8 +15,9 @@ export interface Departamento {
 }
 
 export async function fetchDepartamentos(activo?: boolean): Promise<Departamento[]> {
-  let query = supabase.from('departamentos').select('*, categorias(id, nombre)').order('orden', { ascending: true, nullsFirst: false });
+  let query = supabase.from('departamentos').select('*, categorias!categorias_departamento_id_fkey(id, nombre, orden, activo)').order('orden', { ascending: true, nullsFirst: false }).order('orden', { ascending: true, nullsFirst: false });
   if (activo !== undefined) query = query.eq('activo', activo);
+  // ya tiene order en el select
   const { data, error } = await query;
   if (error) throw new Error(error.message);
   return data || [];
