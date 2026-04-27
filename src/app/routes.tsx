@@ -1,4 +1,4 @@
-import { createBrowserRouter, type RouteObject } from "react-router";
+﻿import { createBrowserRouter, type RouteObject } from "react-router";
 import OddyStorefront          from "./public/OddyStorefront";
 import CarritoPage             from "./public/CarritoPage";
 import CheckoutPage            from "./public/CheckoutPage";
@@ -17,6 +17,8 @@ import AdminML                 from "./admin/pages/AdminML";
 import AdminCatalog            from "./admin/pages/AdminCatalog";
 import AdminProfile            from "./admin/pages/AdminProfile";
 import AdminPublicaciones      from "./admin/pages/AdminPublicaciones";
+import AdminArticulos          from "./admin/pages/AdminArticulos";
+import AdminArticulos          from "./admin/pages/AdminArticulos";
 
 export const TODAS_LAS_RUTAS: (RouteObject & { id: string })[] = [
   { id: "storefront",          path: "/",           Component: OddyStorefront },
@@ -37,7 +39,7 @@ export const TODAS_LAS_RUTAS: (RouteObject & { id: string })[] = [
       { id: "admin-orders",         path: "orders",        Component: AdminOrders },
       { id: "admin-publicaciones",  path: "publicaciones", Component: AdminPublicaciones },
       { id: "admin-profile",        path: "profile",       Component: AdminProfile },
-      { id: "admin-products",       path: "products",      Component: AdminProducts },
+      { id: "admin-catalog-articulos", path: "catalog/articulos", Component: AdminArticulos },
       { id: "admin-catalog",        path: "catalog",       Component: AdminCatalog },
       { id: "admin-analytics",      path: "analytics",     Component: AdminAnalytics },
       { id: "admin-ml",             path: "ml",            Component: AdminML },
