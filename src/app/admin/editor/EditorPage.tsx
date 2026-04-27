@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+﻿import { useRef, useState } from "react";
 import { useEditorStore } from "./engine/useEditorStore";
 import EditCanvas    from "./components/EditCanvas";
 import PreviewCanvas from "./components/PreviewCanvas";
@@ -54,9 +54,9 @@ export default function EditorPage() {
       </aside>
 
       {/* ── Canvas edición ── */}
-      <div style={{ display:"flex", flexDirection:"column", background:"#161616", borderRight:`1.5px solid ${ACCENT}` }}>
-        <div style={{ height:"28px", display:"flex", alignItems:"center", justifyContent:"space-between", padding:"0 10px", borderBottom:"0.5px solid #2a2a2a", flexShrink:0 }}>
-          <span style={{ fontSize:"10px", color:"#666" }}>
+      <div style={{ display:"flex", flexDirection:"column", background:"#F1F3F5", borderRight:`1.5px solid ${ACCENT}`, margin:"12px 6px 12px 12px", borderRadius:"12px", overflow:"hidden" }}>
+        <div style={{ height:"28px", display:"flex", alignItems:"center", justifyContent:"space-between", padding:"0 10px", borderBottom:"0.5px solid #E5E7EB", flexShrink:0, background:"#fff", borderRadius:"12px 12px 0 0" }}>
+          <span style={{ fontSize:"10px", color:"#888" }}>
             {store.src ? `${store.src.width}×${store.src.height}` : "Sin imagen"}
           </span>
           <span style={{ fontSize:"10px", fontWeight:500, background:"rgba(255,122,0,.8)", color:"#fff", padding:"2px 8px", borderRadius:"20px" }}>Edición</span>
@@ -74,14 +74,14 @@ export default function EditorPage() {
       </div>
 
       {/* ── Canvas preview ── */}
-      <div style={{ display:"flex", flexDirection:"column", background:"#161616" }}>
-        <div style={{ height:"28px", display:"flex", alignItems:"center", justifyContent:"center", padding:"0 10px", borderBottom:"0.5px solid #2a2a2a", flexShrink:0 }}>
+      <div style={{ display:"flex", flexDirection:"column", background:"#F1F3F5", margin:"12px 12px 12px 6px", borderRadius:"12px", overflow:"hidden" }}>
+        <div style={{ height:"28px", display:"flex", alignItems:"center", justifyContent:"center", padding:"0 10px", borderBottom:"0.5px solid #E5E7EB", flexShrink:0, background:"#fff", borderRadius:"12px 12px 0 0" }}>
           <span style={{ fontSize:"10px", fontWeight:500, background:"rgba(30,200,120,.8)", color:"#fff", padding:"2px 8px", borderRadius:"20px" }}>Preview</span>
         </div>
         <PreviewCanvas sourceCanvasRef={editCanvasRef} />
-        <div style={{ height:"28px", display:"flex", alignItems:"center", padding:"0 10px", borderTop:"0.5px solid #2a2a2a", flexShrink:0 }}>
+        <div style={{ height:"28px", display:"flex", alignItems:"center", padding:"0 10px", borderTop:"0.5px solid #E5E7EB", flexShrink:0, background:"#fff" }}>
           <span style={{ width:"6px", height:"6px", borderRadius:"50%", background:"#1DC878", display:"inline-block", marginRight:"6px" }} />
-          <span style={{ fontSize:"10px", color:"#666" }}>Sincronizado · render #{renderCount}</span>
+          <span style={{ fontSize:"10px", color:"#888" }}>Sincronizado · render #{renderCount}</span>
         </div>
       </div>
 
