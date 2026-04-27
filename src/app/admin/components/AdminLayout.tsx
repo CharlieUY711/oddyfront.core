@@ -80,6 +80,7 @@ export default function AdminLayout() {
   ];
   const adminMenu = [
     { path: "/admin/catalog", label: "📋 Catálogo", children: [{ path: "/admin/catalog/articulos", label: "📝 Artículos" }] },
+    { path: "/admin/biblioteca",   label: "🗂 Biblioteca"   },
     { path: "/admin/analytics",    label: "📈 Analytics"    },
     { path: "/admin/ml",           label: "🟡 MercadoLibre" },
   ];
