@@ -2678,17 +2678,11 @@ export default function OddyStorefront() {
               <div
                 key={menuItem}
                 className="oddy-menu-item"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setOpenDropdown(isOpen ? null : menuItem);
-                }}
+                onMouseEnter={() => setOpenDropdown(menuItem)}
+                onMouseLeave={() => setOpenDropdown(null)}
               >
                 <span>{menuItem}</span>
-                {deptoCats.length > 0 && (
-                  <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <polyline points="6 9 12 15 18 9"/>
-                  </svg>
-                )}
+
                 {isOpen && deptoCats.length > 0 && (
                   <div className="oddy-dropdown">
                     {deptoCats.map((category) => (
