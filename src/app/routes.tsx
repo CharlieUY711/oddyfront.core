@@ -17,9 +17,9 @@ import AdminCatalog            from "./admin/pages/AdminCatalog";
 import AdminProfile            from "./admin/pages/AdminProfile";
 import AdminPublicaciones      from "./admin/pages/AdminPublicaciones";
 import AdminArticulos          from "./admin/pages/AdminArticulos";
-import AdminArticulos          import AdminArticulos          import AdminBiblioteca         from "./admin/pages/AdminBiblioteca";
+import AdminBiblioteca         from "./admin/pages/AdminBiblioteca";
 import AdminEditor             from "./admin/editor/EditorPage";
-import AdminEditor             from "./admin/editor/EditorPage";
+
 
 export const TODAS_LAS_RUTAS: (RouteObject & { id: string })[] = [
   { id: "storefront",          path: "/",           Component: OddyStorefront },
@@ -42,6 +42,7 @@ export const TODAS_LAS_RUTAS: (RouteObject & { id: string })[] = [
       { id: "admin-profile",        path: "profile",       Component: AdminProfile },
       { id: "admin-catalog-articulos", path: "catalog/articulos", Component: AdminArticulos },
       { id: "admin-biblioteca", path: "biblioteca", Component: AdminBiblioteca },
+      { id: "admin-editor", path: "editor", Component: AdminEditor },
       { id: "admin-catalog", path: "catalog", Component: AdminCatalog },
       { id: "admin-ml",             path: "ml",            Component: AdminML },
     ] as RouteObject[],
