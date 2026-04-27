@@ -78,13 +78,13 @@ export default function AdminLayout() {
     { path: "/admin/publicaciones",label: "♻️ Mis publicaciones"                },
     { path: "/admin/profile",      label: "👤 Mi perfil"                        },
   ];
-
   const adminMenu = [
-    { path: "/admin/products",     label: "📦 Productos"           },
-    { path: "/admin/catalog",      label: "📋 Catálogo"            },
-    { path: "/admin/analytics",    label: "📈 Analytics"           },
-    { path: "/admin/ml",           label: "🟡 MercadoLibre"        },
+    { path: "/admin/catalog", label: "📋 Catálogo", children: [{ path: "/admin/catalog/articulos", label: "📝 Artículos" }] },
+    { path: "/admin/analytics",    label: "📈 Analytics"    },
+    { path: "/admin/ml",           label: "🟡 MercadoLibre" },
   ];
+
+
 
   const isActive = (path: string, exact?: boolean) =>
     exact ? location.pathname === path : location.pathname.startsWith(path);
@@ -142,13 +142,27 @@ export default function AdminLayout() {
               {adminMenu.map(item => {
                 const active = isActive(item.path, item.exact);
                 return (
-                  <Link key={item.path} to={item.path} style={{
-                    display:"block", padding:"0.55rem 1.5rem", textDecoration:"none", fontSize:"0.875rem",
-                    background: active ? `rgba(255,122,0,0.15)` : "transparent",
-                    color: active ? ACCENT : "rgba(255,255,255,0.62)",
-                    borderLeft: active ? `3px solid ${ACCENT}` : "3px solid transparent",
-                    fontWeight: active ? 600 : 400, transition:"all 0.12s",
-                  }}>{item.label}</Link>
+                  <div key={item.path}>
+                    <Link to={item.path} style={{
+                      display:"block", padding:"0.55rem 1.5rem", textDecoration:"none", fontSize:"0.875rem",
+                      background: active ? `rgba(255,122,0,0.15)` : "transparent",
+                      color: active ? ACCENT : "rgba(255,255,255,0.62)",
+                      borderLeft: active ? `3px solid ${ACCENT}` : "3px solid transparent",
+                      fontWeight: active ? 600 : 400, transition:"all 0.12s",
+                    }}>{item.label}</Link>
+                    {active && (item as any).children?.map((child: any) => {
+                      const childActive = isActive(child.path);
+                      return (
+                        <Link key={child.path} to={child.path} style={{
+                          display:"block", padding:"0.4rem 1.5rem 0.4rem 2.75rem", textDecoration:"none", fontSize:"0.8rem",
+                          background: childActive ? `rgba(255,122,0,0.1)` : "transparent",
+                          color: childActive ? ACCENT : "rgba(255,255,255,0.4)",
+                          borderLeft: childActive ? `3px solid ${ACCENT}` : "3px solid transparent",
+                          fontWeight: childActive ? 600 : 400, transition:"all 0.12s",
+                        }}>{child.label}</Link>
+                      );
+                    })}
+                  </div>
                 );
               })}
             </>
