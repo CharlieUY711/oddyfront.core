@@ -3,7 +3,7 @@
    Charlie Marketplace Builder v1.5
    Frontstore principal: Market + Segunda Mano
    ===================================================== */
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef, useEffect, useLayoutEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import { supabase } from '../../utils/supabase/client';
 import { useProductos } from '../hooks/useProductos';
