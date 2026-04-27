@@ -22,8 +22,7 @@ export default function EditorPage() {
   const navItem = (t: Tab, label: string) => (
     <button onClick={() => setTab(t)} style={{
       flex:1, padding:"8px 4px", background:"none", border:"none",
-      borderBottom: tab === t ? `2px solid ${ACCENT}` : "2px solid transparent",
-      color: tab === t ? ACCENT : "rgba(255,255,255,0.5)",
+      borderBottom: tab === t ? `2px solid ${ACCENT}` : "2px solid transparent", color: tab === t ? ACCENT : "#6B7280",
       fontSize:"11px", fontWeight: tab === t ? 500 : 400, cursor:"pointer",
       transition:"all .12s"
     }}>{label}</button>
@@ -48,7 +47,7 @@ export default function EditorPage() {
           {tab === "transform" && <div style={{ color:"var(--color-text-primary)" }}><TransformPanel /></div>}
           {tab === "effects"   && <div style={{ color:"var(--color-text-primary)" }}><EffectsPanel /></div>}
         </div>
-        <div style={{ borderTop:"0.5px solid rgba(255,255,255,0.08)" }}>
+        <div style={{ borderTop:"0.5px solid #E5E7EB" }}>
           <HistoryPanel />
         </div>
       </aside>
@@ -70,7 +69,6 @@ export default function EditorPage() {
           canvasRef={editCanvasRef}
           onRender={() => setRenderCount(n => n + 1)}
         />
-        <canvas id="emi-edit-canvas" ref={editCanvasRef} style={{ display:"none" }} />
       </div>
 
       {/* ── Canvas preview ── */}
@@ -89,11 +87,11 @@ export default function EditorPage() {
       <aside style={{ background: SIDEBAR_BG, display:"flex", flexDirection:"column", overflow:"hidden", borderLeft:"0.5px solid rgba(255,255,255,0.08)" }}>
         <div style={{ flex:1, overflowY:"auto" }}>
           <ExportPanel />
-          <div style={{ height:"0.5px", background:"rgba(255,255,255,0.08)" }} />
+          <div style={{ height:"0.5px", background:"#E5E7EB" }} />
           <div style={{ padding:"10px 12px" }}>
-            <div style={{ fontSize:"10px", fontWeight:500, color:"rgba(255,255,255,0.3)", textTransform:"uppercase", letterSpacing:".08em", marginBottom:"8px" }}>Info</div>
+            <div style={{ fontSize:"10px", fontWeight:500, color:"#9CA3AF", textTransform:"uppercase", letterSpacing:".08em", marginBottom:"8px" }}>Info</div>
             {store.src ? (
-              <div style={{ fontSize:"10px", color:"rgba(255,255,255,0.5)", lineHeight:2 }}>
+              <div style={{ fontSize:"10px", color:"#6B7280", lineHeight:2 }}>
                 <div>Ancho: {store.src.width}px</div>
                 <div>Alto: {store.src.height}px</div>
                 <div>Zoom: {Math.round(store.zoom * 100)}%</div>
