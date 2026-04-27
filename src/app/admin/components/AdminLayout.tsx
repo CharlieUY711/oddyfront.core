@@ -184,7 +184,14 @@ export default function AdminLayout() {
         {/* Topbar */}
         <header style={{ background: SIDEBAR_BG, padding:"0 2rem", height:"70px", display:"flex", alignItems:"center", justifyContent:"space-between", position:"sticky", top:0, zIndex:10 }}>
           <h1 style={{ margin:0, fontSize:"1.25rem", fontWeight:700, color:"rgba(255,255,255,0.9)" }}>
-            {[...commonMenu, ...adminMenu].find(m => isActive(m.path, m.exact))?.label?.split(" ").slice(1).join(" ") || "Dashboard"}
+            {(() => {
+            const all = [...commonMenu, ...adminMenu];
+            const parent = all.find(m => isActive(m.path, m.exact));
+            const child = (parent as any)?.children?.find((c: any) => isActive(c.path));
+            const parentLabel = parent?.label?.split(" ").slice(1).join(" ") || "Dashboard";
+            const childLabel = child?.label?.split(" ").slice(1).join(" ");
+            return childLabel ? `${parentLabel} — ${childLabel}` : parentLabel;
+          })()}
           </h1>
           <button onClick={() => window.location.reload()}
             title="Actualizar"
