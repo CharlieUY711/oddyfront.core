@@ -82,7 +82,7 @@ export default function AdminLayout() {
     { path: "/admin/catalog", label: "📋 Catálogo", children: [{ path: "/admin/catalog/articulos", label: "📝 Artículos" }] },
     { path: "/admin/analytics",    label: "📈 Analytics"    },
     { path: "/admin/ml",           label: "🟡 MercadoLibre" },
-  ];
+
   ];
 
 
