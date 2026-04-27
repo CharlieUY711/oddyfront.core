@@ -1,5 +1,9 @@
-import { supabase } from '../../utils/supabase/client';
+﻿import { supabase } from '../../utils/supabase/client';
 
+export interface Categoria {
+  id:     string;
+  nombre: string;
+}
 export interface Departamento {
   id:         string;
   nombre:     string;
@@ -7,10 +11,11 @@ export interface Departamento {
   activo:     boolean;
   orden:      number;
   created_at?: string;
+  categorias?: Categoria[];
 }
 
 export async function fetchDepartamentos(activo?: boolean): Promise<Departamento[]> {
-  let query = supabase.from('departamentos').select('*').order('orden', { ascending: true, nullsFirst: false });
+  let query = supabase.from('departamentos').select('*, categorias(id, nombre)').order('orden', { ascending: true, nullsFirst: false });
   if (activo !== undefined) query = query.eq('activo', activo);
   const { data, error } = await query;
   if (error) throw new Error(error.message);
