@@ -76,13 +76,13 @@ export default function AdminLayout() {
     { path: "/admin",              label: "📊 Dashboard",          exact: true  },
     { path: "/admin/orders",       label: "🛍 Mis órdenes"                      },
     { path: "/admin/publicaciones",label: "♻️ Mis publicaciones"                },
-    { path: "/admin/profile",      label: "👤 Mi perfil"                        },
+    { path: "/admin/biblioteca",   label: "🗂 Biblioteca"                        },
   ];
   const adminMenu = [
     { path: "/admin/catalog", label: "📋 Catálogo", children: [{ path: "/admin/catalog/articulos", label: "📝 Artículos" }] },
-    { path: "/admin/biblioteca",   label: "🗂 Biblioteca"   },
     { path: "/admin/analytics",    label: "📈 Analytics"    },
     { path: "/admin/ml",           label: "🟡 MercadoLibre" },
+  ];
   ];
 
 
