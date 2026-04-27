@@ -43,6 +43,7 @@ export const TODAS_LAS_RUTAS: (RouteObject & { id: string })[] = [
       { id: "admin-catalog-articulos", path: "catalog/articulos", Component: AdminArticulos },
       { id: "admin-biblioteca", path: "biblioteca", Component: AdminBiblioteca },
       { id: "admin-editor", path: "editor", Component: AdminEditor },
+      { id: "admin-editor", path: "editor", Component: AdminEditor },
       { id: "admin-catalog", path: "catalog", Component: AdminCatalog },
       { id: "admin-ml",             path: "ml",            Component: AdminML },
     ] as RouteObject[],
