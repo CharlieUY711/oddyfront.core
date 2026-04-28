@@ -54,14 +54,20 @@ export default function EditCanvas({ canvasRef, onRender }: Props) {
     reader.onload = ev => {
       const img = new Image();
       img.onload  = () => store.setSrc(img);
-      img.onerror = () => console.error("Error cargando imagen");
       img.src = ev.target?.result as string;
     };
     reader.readAsDataURL(f);
   };
 
+  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    if (f) loadFile(f);
+    e.target.value = "";
+  };
+
   return (
-    <div ref={wrapRef}
+    <div
+      ref={wrapRef}
       style={{ flex:1, display:"flex", alignItems:"center", justifyContent:"center", overflow:"hidden", position:"relative", padding:"12px" }}
       onDragOver={e => { e.preventDefault(); e.currentTarget.style.outline = "2px dashed #FF7A00"; }}
       onDragLeave={e => { e.currentTarget.style.outline = ""; }}
@@ -72,27 +78,42 @@ export default function EditCanvas({ canvasRef, onRender }: Props) {
         if (f?.type.startsWith("image/")) loadFile(f);
       }}
     >
-      {!store.src ? (
-        <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:"12px", color:"#888", cursor:"pointer" }}
-          onClick={() => document.getElementById("emi-file-input")?.click()}>
+      {/* Canvas siempre montado para que el ref esté disponible */}
+      <canvas
+        ref={canvasRef}
+        style={{ maxWidth:"100%", maxHeight:"100%", objectFit:"contain", borderRadius:"6px", display: store.src ? "block" : "none" }}
+      />
+
+      {/* Upload zone solo cuando no hay imagen */}
+      {!store.src && (
+        <div
+          style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:"12px", color:"#888", cursor:"pointer", position:"absolute" }}
+          onClick={() => document.getElementById("emi-file-input")?.click()}
+        >
           <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#aaa" strokeWidth="1.5">
             <rect x="3" y="3" width="18" height="18" rx="3"/>
             <path d="m8 12 4-4 4 4M12 8v8"/>
           </svg>
           <p style={{ fontSize:"13px", textAlign:"center", lineHeight:1.6, color:"#888" }}>
-            Arrastrá o hacé click<br/>para cargar una imagen
+            Arrastra o hace click<br/>para cargar una imagen
           </p>
           <button
             style={{ background:"#FF7A00", color:"#fff", border:"none", borderRadius:"8px", padding:"8px 20px", fontSize:"13px", fontWeight:500, cursor:"pointer" }}
-            onClick={e => { e.stopPropagation(); document.getElementById("emi-file-input")?.click(); }}>
+            onClick={e => { e.stopPropagation(); document.getElementById("emi-file-input")?.click(); }}
+          >
             Subir imagen
           </button>
-          <input id="emi-file-input" type="file" accept="image/*" style={{ display:"none" }}
-            onChange={e => { const f = e.target.files?.[0]; if (f) loadFile(f); }} />
         </div>
-      ) : (
-        <canvas ref={canvasRef} style={{ maxWidth:"100%", maxHeight:"100%", objectFit:"contain", borderRadius:"6px" }} />
       )}
+
+      {/* Input file global */}
+      <input
+        id="emi-file-input"
+        type="file"
+        accept="image/*"
+        style={{ display:"none" }}
+        onChange={handleFile}
+      />
     </div>
   );
 }
