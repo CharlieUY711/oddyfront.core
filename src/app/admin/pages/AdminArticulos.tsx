@@ -72,12 +72,12 @@ export default function AdminArticulos() {
         stock:               parseInt(stock) || 1,
         imagen_principal:    imagenUrl.trim() || null,
         departamento_id:     deptoId || null,
-        categoria_id:        catId   || null,
-        subcategoria_id:     subcatId || null,
         departamento_nombre: depto?.nombre || null,
-        activo,
+        status:              activo ? "active" : "inactive",
         published_date:      new Date().toISOString(),
       });
+
+
 
       if (error) throw error;
       notify("✅ Artículo publicado");

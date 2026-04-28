@@ -36,7 +36,7 @@ export default function EditorPage() {
     <div style={{ display:"grid", gridTemplateColumns:"200px 1fr 1fr 180px", height:"calc(100vh - 140px)", minHeight:"500px", border:"0.5px solid var(--color-border-tertiary)", borderRadius:"var(--border-radius-lg)", overflow:"hidden", fontFamily:"DM Sans, sans-serif" }}>
 
       {/* ── Panel izquierdo ── */}
-      <aside style={{ background: SIDEBAR_BG, display:"flex", flexDirection:"column", overflow:"hidden" }}>
+      <aside style={{ background: "#fff", display:"flex", flexDirection:"column", overflow:"hidden" }}>
         <div style={{ display:"flex", borderBottom:"0.5px solid rgba(255,255,255,0.08)" }}>
           {navItem("adjust","Ajustes")}
           {navItem("transform","Forma")}
@@ -84,7 +84,7 @@ export default function EditorPage() {
       </div>
 
       {/* ── Panel derecho ── */}
-      <aside style={{ background: SIDEBAR_BG, display:"flex", flexDirection:"column", overflow:"hidden", borderLeft:"0.5px solid rgba(255,255,255,0.08)" }}>
+      <aside style={{ background: "#fff", display:"flex", flexDirection:"column", overflow:"hidden", borderLeft:"0.5px solid rgba(255,255,255,0.08)" }}>
         <div style={{ flex:1, overflowY:"auto" }}>
           <ExportPanel />
           <div style={{ height:"0.5px", background:"#E5E7EB" }} />
