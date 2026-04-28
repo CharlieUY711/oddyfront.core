@@ -1,4 +1,4 @@
-import { create } from "zustand";
+﻿import { create } from "zustand";
 
 export interface EditorState {
   brightness: number; contrast: number; exposure: number;
@@ -34,7 +34,7 @@ export const useEditorStore = create<EditorState & EditorActions>((s, g) => ({
   set: (key, value) => s({ [key]: value } as any),
 
   setSrc: (img) => {
-    s({ src: img, ...DEFAULTS, history: [], histIdx: -1 });
+    s({ ...DEFAULTS, src: img, history: [], histIdx: -1 });
     setTimeout(() => g().saveHistory("Imagen cargada"), 0);
   },
 
