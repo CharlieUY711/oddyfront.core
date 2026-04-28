@@ -1,5 +1,4 @@
-﻿$editorPage = @'
-import { useRef, useState } from "react";
+﻿import { useRef, useState } from "react";
 import { useEditorStore } from "./engine/useEditorStore";
 import EditCanvas     from "./components/EditCanvas";
 import PreviewCanvas  from "./components/PreviewCanvas";
@@ -36,14 +35,13 @@ export default function EditorPage() {
       padding:"5px 14px", background:"none",
       border:`1.5px solid ${color}`, borderRadius:"7px",
       color, fontSize:"12px", fontWeight:500, cursor:"pointer",
-      transition:"all .15s"
     }}>{label}</button>
   );
 
   return (
     <div style={{ display:"flex", flexDirection:"column", height:"calc(100vh - 110px)", minHeight:"500px", fontFamily:"DM Sans, sans-serif" }}>
 
-      {/* ── Barra superior ── */}
+      {/* Barra superior */}
       <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"8px 16px", background:"#fff", border:"1.5px solid #E5E7EB", borderRadius:"12px", marginBottom:"10px", gap:"10px" }}>
         <div style={{ display:"flex", alignItems:"center", gap:"8px" }}>
           <span style={{ fontWeight:700, fontSize:"14px", color:BLUE }}>🎨 Editor</span>
@@ -64,7 +62,7 @@ export default function EditorPage() {
             a.click();
           }, GREEN)}
           <div style={{ display:"flex", gap:"4px" }}>
-            {["＋","－","Fit"].map((l,i) => (
+            {(["＋","－","Fit"] as const).map((l,i) => (
               <button key={i} onClick={() => {
                 if(l==="＋") store.set("zoom", Math.min(store.zoom*1.25,5));
                 else if(l==="－") store.set("zoom", Math.max(store.zoom/1.25,.1));
@@ -75,8 +73,8 @@ export default function EditorPage() {
         </div>
       </div>
 
-      {/* ── Cuerpo principal ── */}
-      <div style={{ display:"grid", gridTemplateColumns:"200px 1fr 1fr 180px", flex:1, gap:"0", overflow:"hidden" }}>
+      {/* Cuerpo */}
+      <div style={{ display:"grid", gridTemplateColumns:"200px 1fr 1fr 180px", flex:1, overflow:"hidden", gap:"0" }}>
 
         {/* Panel izquierdo */}
         <aside style={{ background:"#fff", border:"1.5px solid #E5E7EB", borderRadius:"12px", display:"flex", flexDirection:"column", overflow:"hidden", marginRight:"8px" }}>
@@ -140,9 +138,3 @@ export default function EditorPage() {
     </div>
   );
 }
-'@
-[System.IO.File]::WriteAllText(
-  "C:\Carlos\Marketplace\ODDY\ODDY_Front2\src\app\admin\editor\EditorPage.tsx",
-  $editorPage, [System.Text.Encoding]::UTF8
-)
-Write-Host "OK EditorPage" -ForegroundColor Green
