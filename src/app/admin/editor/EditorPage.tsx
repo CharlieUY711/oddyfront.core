@@ -40,7 +40,7 @@ export default function EditorPage() {
 
   return (
     <div style={{ display:"flex", flexDirection:"column", height:"calc(100vh - 110px)", minHeight:"500px", fontFamily:"DM Sans, sans-serif" }}>
-      <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"8px 16px", background:"#fff", border:"1.5px solid #E5E7EB", borderRadius:"12px", marginBottom:"10px", gap:"10px" }}>
+      <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"8px 16px", background:"#fff", border:"1.5px solid #E5E7EB", borderRadius:"12px", marginBottom:"5px", gap:"10px" }}>
         <div style={{ display:"flex", alignItems:"center", gap:"8px" }}>
           <span style={{ fontWeight:700, fontSize:"14px", color:BLUE }}>Editor</span>
           <span style={{ width:"1px", height:"20px", background:"#E5E7EB" }} />
@@ -58,7 +58,7 @@ export default function EditorPage() {
         </div>
       </div>
       <div style={{ display:"grid", gridTemplateColumns:"200px 1fr 1fr 180px", flex:1, overflow:"hidden" }}>
-        <aside style={{ background:"#fff", border:"1.5px solid #E5E7EB", borderRadius:"12px", display:"flex", flexDirection:"column", overflow:"hidden", marginRight:"8px" }}>
+        <aside style={{ background:"#fff", border:"1.5px solid #E5E7EB", borderRadius:"12px", display:"flex", flexDirection:"column", overflow:"hidden", marginRight:"4px" }}>
           <div style={{ display:"flex", borderBottom:"1px solid #F3F4F6" }}>
             {navBtn("adjust","Ajustes",ACCENT)}
             {navBtn("transform","Forma",BLUE)}
@@ -71,7 +71,7 @@ export default function EditorPage() {
           </div>
           <div style={{ borderTop:"1px solid #F3F4F6" }}><HistoryPanel /></div>
         </aside>
-        <div style={{ display:"flex", flexDirection:"column", background:"#F4F5F7", border:`1.5px solid ${ACCENT}`, borderRadius:"12px", overflow:"hidden", marginRight:"6px" }}>
+        <div style={{ display:"flex", flexDirection:"column", background:"#F4F5F7", border:`1.5px solid ${ACCENT}`, borderRadius:"12px", overflow:"hidden", marginRight:"3px" }}>
           <div style={{ height:"32px", display:"flex", alignItems:"center", justifyContent:"space-between", padding:"0 12px", borderBottom:"1px solid #E5E7EB", background:"#fff", flexShrink:0 }}>
             <span style={{ fontSize:"10px", color:"#9CA3AF" }}>{store.src ? `${store.src.width}x${store.src.height}` : "Sin imagen"}</span>
             <span style={{ fontSize:"10px", fontWeight:600, background:ACCENT, color:"#fff", padding:"2px 10px", borderRadius:"20px" }}>Edicion</span>
@@ -79,17 +79,17 @@ export default function EditorPage() {
           </div>
           <EditCanvas canvasRef={editCanvasRef} onRender={() => setRenderCount(n => n+1)} />
         </div>
-        <div style={{ display:"flex", flexDirection:"column", background:"#F4F5F7", border:"1.5px solid #E5E7EB", borderRadius:"12px", overflow:"hidden", marginLeft:"6px" }}>
+        <div style={{ display:"flex", flexDirection:"column", background:"#F4F5F7", border:"1.5px solid #E5E7EB", borderRadius:"12px", overflow:"hidden", marginLeft:"3px" }}>
           <div style={{ height:"32px", display:"flex", alignItems:"center", justifyContent:"center", borderBottom:"1px solid #E5E7EB", background:"#fff", flexShrink:0 }}>
             <span style={{ fontSize:"10px", fontWeight:600, background:GREEN, color:"#fff", padding:"2px 10px", borderRadius:"20px" }}>Preview</span>
           </div>
           <PreviewCanvas sourceCanvasRef={editCanvasRef} />
           <div style={{ height:"28px", display:"flex", alignItems:"center", padding:"0 12px", borderTop:"1px solid #E5E7EB", background:"#fff", flexShrink:0 }}>
-            <span style={{ width:"6px", height:"6px", borderRadius:"50%", background:GREEN, display:"inline-block", marginRight:"6px" }} />
+            <span style={{ width:"6px", height:"6px", borderRadius:"50%", background:GREEN, display:"inline-block", marginRight:"3px" }} />
             <span style={{ fontSize:"10px", color:"#9CA3AF" }}>Sincronizado render {renderCount}</span>
           </div>
         </div>
-        <aside style={{ background:"#fff", border:"1.5px solid #E5E7EB", borderRadius:"12px", display:"flex", flexDirection:"column", overflow:"hidden", marginLeft:"8px" }}>
+        <aside style={{ background:"#fff", border:"1.5px solid #E5E7EB", borderRadius:"12px", display:"flex", flexDirection:"column", overflow:"hidden", marginLeft:"4px" }}>
           <ExportPanel />
           <div style={{ height:"1px", background:"#F3F4F6" }} />
           <div style={{ padding:"10px 12px" }}>

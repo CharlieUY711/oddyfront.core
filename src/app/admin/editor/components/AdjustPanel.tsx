@@ -1,4 +1,4 @@
-import { useEditorStore } from "../engine/useEditorStore";
+﻿import { useEditorStore } from "../engine/useEditorStore";
 
 const A = "#FF7A00";
 
@@ -24,7 +24,7 @@ export default function AdjustPanel() {
   };
 
   const inp: React.CSSProperties = {
-    width:"100%", height:"3px", accentColor:A, cursor:"pointer"
+    width:"100%", height:"3px", accentColor:'#FF7A00', cursor:"pointer"
   };
 
   const groups = [
@@ -47,7 +47,7 @@ export default function AdjustPanel() {
                 </span>
               </div>
               <input type="range" min={sl.min} max={sl.max} value={store[sl.key] as number}
-                style={inp}
+                style={inp(sl.key)}
                 onChange={e => handle(sl.key, parseInt(e.target.value))} />
             </div>
           ))}
